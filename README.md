@@ -1,4 +1,9 @@
 # Java-Barcode-Scanner-Server
 Collects the barcode data from an android device running the client app.  
 
-Also, I will post the Android client app playstore link soon as well.
+Android client:
+https://play.google.com/store/apps/details?id=wetsch.jbcsclient
+
+If you like to add the server to one of your own projects, add the jar to your build path.
+
+
