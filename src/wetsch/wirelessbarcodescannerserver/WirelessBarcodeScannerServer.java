@@ -9,16 +9,17 @@ import java.net.Socket;
 import java.util.HashSet;
 
 /*
- * Last modified on 8/23/2015
+ * Last modified on 8/28/2015
  * Changes:
- * Added client inet address to receiver event.
+ * Fixed typos.
+ * Added checking if listeners already exist or are not yet added in the listener methods. 
  */
 /**
- * This class extends Thread.  It uses this thread to listen for incoming connections from the Wireless bar-code scanner Android app.. 
+ * This class extends Thread.  It uses this thread to listen for incoming connections from the Wireless barcode scanner Android app.. 
  * The server receives the barcode data transmitted by the app, and makes it available via the BarcodeServerDataListener. 
- *The bar-code information that is received is listed below.
- *<li> Bar-code Type</li>
- *<li> Bar-code</li>  
+ *The barcode information that is received is listed below.
+ *<li> Barcode Type</li>
+ *<li> Barcode</li>  
  * @author kevin
  * @version 1.0
  * 
@@ -141,7 +142,8 @@ public class WirelessBarcodeScannerServer extends Thread{
 	public void addServerDatareceivedListener(BarcodeServerDataListener listener){
 		if(listeners == null)
 			listeners = new HashSet<BarcodeServerDataListener>();
-		listeners.add(listener);
+		if(!listeners.contains(listener))
+			listeners.add(listener);
 	}
 	
 	/**
@@ -149,7 +151,8 @@ public class WirelessBarcodeScannerServer extends Thread{
 	 * @param listener
 	 */
 	public void removeServerDatareceivedListener(BarcodeServerDataListener listener){
-		listeners.remove(listener);
+		if(listeners.contains(listener))
+			listeners.remove(listener);
 		if(listeners.size() == 0)
 			listeners = null;
 	}

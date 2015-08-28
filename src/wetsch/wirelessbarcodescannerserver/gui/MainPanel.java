@@ -18,7 +18,8 @@ import wetsch.wirelessbarcodescannerserver.BarcodeServerDataListener;
 import wetsch.wirelessbarcodescannerserver.WirelessBarcodeScannerServer;
 
 /*
-** Last modified on 8/23/2015
+** Last modified on 8/28/2015
+*Fixed message in catch error if server can not be shutdown.
  */
 
 /**
@@ -59,7 +60,7 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			}
 			}catch (InterruptedException | IOException e) {
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "Cound not shut down server");
+				JOptionPane.showMessageDialog(this, "Could not shut down server");
 			}
 	}
 	
@@ -91,7 +92,7 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 
 	}
 	
-	//Listener method for the copy bar-code to clip-board button.
+	//Listener method for the copy barcode to clip-board button.
 	private void btnCopyToClipboardListener(){
 		Toolkit tools = Toolkit.getDefaultToolkit();
 		Clipboard clb = tools.getSystemClipboard();
@@ -129,7 +130,7 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		}
 	}
 
-	//Handle the bar-code data when received by server.
+	//Handle the barcode data when received by server.
 	@Override
 	public void barcodeServerDatareceived(BarcodeReceiverEvent e) {
 		DefaultTableModel model = (DefaultTableModel) jtbcTable.getModel();
