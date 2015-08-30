@@ -87,8 +87,10 @@ public class WirelessBarcodeScannerServer extends Thread{
 		if(listeners != null){
 		for(BarcodeServerDataListener l : listeners)
 			l.barcodeServerDatareceived(new BarcodeReceiverEvent(this, data, clientInetAddress));
-			
 		}
+		out.writeObject("Data received by server.");
+		out.flush();
+
 		closeConnection();
 	}
 	
@@ -109,8 +111,6 @@ public class WirelessBarcodeScannerServer extends Thread{
 	}
 	//Closes the streams and connection.
 	private void closeConnection() throws IOException{
-		out.writeObject("Data received by server.");
-		out.flush();
 		in.close();
 		in = null;
 		out.close();

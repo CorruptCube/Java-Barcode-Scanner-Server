@@ -15,11 +15,12 @@ import javax.swing.table.DefaultTableModel;
 
 import wetsch.wirelessbarcodescannerserver.BarcodeReceiverEvent;
 import wetsch.wirelessbarcodescannerserver.BarcodeServerDataListener;
+import wetsch.wirelessbarcodescannerserver.Robot;
 import wetsch.wirelessbarcodescannerserver.WirelessBarcodeScannerServer;
 
 /*
-** Last modified on 8/28/2015
-*Fixed message in catch error if server can not be shutdown.
+** Last modified on 8/30/2015
+*Added support for robot.
  */
 
 /**
@@ -30,7 +31,7 @@ import wetsch.wirelessbarcodescannerserver.WirelessBarcodeScannerServer;
 public class MainPanel  extends MainPanelLayout implements BarcodeServerDataListener, ActionListener{
 	private static final long serialVersionUID = 1L;
 	
-	
+	private boolean useRowbot = false;
 	private WirelessBarcodeScannerServer server = null;
 
 	public MainPanel() {
@@ -42,6 +43,7 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		btnStartServer.addActionListener(this);
 		btnStopserver.addActionListener(this);
 		btnCopyBarcodeToClipboard.addActionListener(this);
+		btnRobot.addActionListener(this);
 		btnExit.addActionListener(this);
 	}
 	
@@ -89,7 +91,6 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		lblServerStatus.setText("Not Running");
 		lblServerAddress.setText("N/A");
 		lblServerPort.setText("N/A");
-
 	}
 	
 	//Listener method for the copy barcode to clip-board button.
@@ -101,10 +102,19 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			String barcode = jtbcTable.getValueAt(selectedBarcode, 1).toString();
 			clb.setContents(new StringSelection(barcode), null);
 			lblMessages.setText("Barcode value copyed to clipboard.");
-
-			
 		}else
 			lblMessages.setText("YOu do not have a barcode selected.");
+	}
+	
+	//Listener method for the btnRobot button.
+	private void btnRobotListener(){
+		if(useRowbot){
+			useRowbot = false;
+			btnRobot.setText("Turn robot on");
+		}else{
+			useRowbot = true;
+			btnRobot.setText("Turn robot off");
+		}
 	}
 	
 	//Listener method for the exit button.
@@ -112,8 +122,6 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		stopServer();
 		System.exit(0);
 	}
-	
-
 	
 	//Listeners
 
@@ -125,6 +133,8 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			btnStopServerListener();
 		}else if(e.getSource() == btnCopyBarcodeToClipboard){
 			btnCopyToClipboardListener();
+		}if(e.getSource() == btnRobot){
+			btnRobotListener();
 		}else if(e.getSource() == btnExit){
 			btnExitListener();
 		}
@@ -133,10 +143,24 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 	//Handle the barcode data when received by server.
 	@Override
 	public void barcodeServerDatareceived(BarcodeReceiverEvent e) {
+		
 		DefaultTableModel model = (DefaultTableModel) jtbcTable.getModel();
+		try{
 		model.addRow(new String[]{e.getBarcodeType(), e.getBarcode()});
+		/*
+		 * Enable the robot to use the keyboard.
+		 * This is what allows the barcode to be
+		 * inputed outside the program.
+		 */
+		if(useRowbot){
+			Robot robot = new Robot();
+			robot.typeString(e.getBarcode());
+		}
 		DateFormat df = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 		Calendar cal = Calendar.getInstance();
 		lblMessages.setText("Last barcode received from " + e.getClientInetAddress()+ " at " + df.format(cal.getTime()) + ".");
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
 	}
 }

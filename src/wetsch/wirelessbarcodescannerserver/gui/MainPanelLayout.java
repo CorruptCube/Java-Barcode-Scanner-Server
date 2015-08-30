@@ -30,7 +30,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 /*
- * Last modified on 8/23/2015
+ * Last modified on 8/30/2015
+ * Added button to turn on/off robot.
  */
 
 /**
@@ -67,6 +68,7 @@ public abstract class MainPanelLayout extends JFrame{
 	protected JButton btnStartServer = new JButton("Start Server");
 	protected JButton btnStopserver = new JButton("Stop Server");
 	protected JButton btnCopyBarcodeToClipboard = new JButton("copy Barcode to Clipboard");
+	protected JButton btnRobot = new JButton("Turn robot on");
 	protected JButton btnExit = new JButton("Exit");
 	
 	public MainPanelLayout(){
@@ -132,7 +134,9 @@ public abstract class MainPanelLayout extends JFrame{
 
 		addComp(jpButtons, btnCopyBarcodeToClipboard, 1, 3, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 0.5, 0);
 
-		addComp(jpButtons, btnExit, 1, 4, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 1, 1);
+		addComp(jpButtons, btnRobot, 1, 4, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 0.5, 0);
+
+		addComp(jpButtons, btnExit, 1, 5, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 1, 1);
 
 	}
 	
