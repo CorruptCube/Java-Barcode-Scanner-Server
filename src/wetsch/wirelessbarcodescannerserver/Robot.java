@@ -8,7 +8,7 @@ import java.awt.AWTException;
 
 /**
  * This class extends Robot from the java.awt package.  
- * This class has a method that simulates typing of on the keyboard
+ * This class has a method that simulates typing on the keyboard
  * @author kevin
  *@version 1.0
  */
