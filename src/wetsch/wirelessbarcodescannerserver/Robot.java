@@ -34,7 +34,7 @@ public class Robot extends java.awt.Robot {
 					}
 
 				}catch(Exception e){
-					
+					e.printStackTrace();
 				}
 			}
 		});
