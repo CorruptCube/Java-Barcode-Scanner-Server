@@ -1,11 +1,15 @@
 package wetsch.wirelessbarcodescannerserver.gui;
 
+import java.awt.AWTException;
+import java.awt.Image;
+import java.awt.SystemTray;
 import java.awt.Toolkit;	
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -13,14 +17,19 @@ import java.util.Calendar;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+
 import wetsch.wirelessbarcodescannerserver.BarcodeReceiverEvent;
 import wetsch.wirelessbarcodescannerserver.BarcodeServerDataListener;
 import wetsch.wirelessbarcodescannerserver.Robot;
 import wetsch.wirelessbarcodescannerserver.WirelessBarcodeScannerServer;
 
 /*
-** Last modified on 8/30/2015
-*Added support for robot.
+** Last modified on 9/4/2015
+*Added listeners for tray icon.
+*Modified listener for starting and stopping of server.
+*Added OS checking to determine which tray icon load method to use.
  */
 
 /**
@@ -28,23 +37,43 @@ import wetsch.wirelessbarcodescannerserver.WirelessBarcodeScannerServer;
  * @author kevin
  *@version 1.0
  */
-public class MainPanel  extends MainPanelLayout implements BarcodeServerDataListener, ActionListener{
+public class MainPanel  extends MainPanelLayout implements BarcodeServerDataListener, ActionListener, Listener{
 	private static final long serialVersionUID = 1L;
 	
 	private boolean useRowbot = false;
 	private WirelessBarcodeScannerServer server = null;
-
+	private LinuxTrayIcon ltIcon = null;
+	private SystemTrayIcon trayIcon = null;
+	
 	public MainPanel() {
+		if(SystemTray.isSupported() && !System.getProperty("os.name").equals("Linux")){
+			setupSystemTrayIcon();
+		}else{
+			ltIcon = new LinuxTrayIcon(this);
+			ltIcon.showIcon();
+		}
 		setupActionListeners();
 	}
 	
 	//Set up listeners.
 	private void setupActionListeners(){
-		btnStartServer.addActionListener(this);
-		btnStopserver.addActionListener(this);
+		btnStartStopServer.addActionListener(this);
 		btnCopyBarcodeToClipboard.addActionListener(this);
 		btnRobot.addActionListener(this);
 		btnExit.addActionListener(this);
+		btnCloseToTray.addActionListener(this);
+
+	}
+	
+	//Setup system tray icon
+	private void setupSystemTrayIcon(){
+		try {
+			URL url = System.class.getResource("/tray_icon-16x16.png");
+			Image img = Toolkit.getDefaultToolkit().getImage(url);
+			trayIcon = new SystemTrayIcon(img, new TrayIconActionListener());
+		} catch (AWTException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/*
@@ -66,31 +95,54 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			}
 	}
 	
+	private void openCloseInterface(){
+		if(isVisible()){
+			setVisible(false);
+			if(trayIcon != null)
+				trayIcon.getMenuItemOpenInterface().setLabel("Show interface");
+			else if(ltIcon != null)
+				ltIcon.changeMenuItemLabel("Show interface", ltIcon.getItemShowHideInterface());
+		}else{
+			setVisible(true);
+			if(trayIcon != null)
+				trayIcon.getMenuItemOpenInterface().setLabel("Hide interface");
+			else if(ltIcon != null)
+				ltIcon.changeMenuItemLabel("Hide interface", ltIcon.getItemShowHideInterface());
+		}
+	}
+	
 	/*
 	 * Listener method for start server button.
 	 * if the server thread is equal to null,
 	 * a new thread is created and the server is started.
 	 * 
 	 */
-	private void btnStartServerListener(){
-		String address = (String) jcbInterfaces.getSelectedItem();
-		int port = Integer.parseInt(jtfPort.getText());
+	private void btnStartStopServerListener(){
 		if(server == null){
+			String address = (String) jcbInterfaces.getSelectedItem();
+			int port = Integer.parseInt(jtfPort.getText());
 			server = new WirelessBarcodeScannerServer(address, port);
 			server.addServerDatareceivedListener(this);
 			server.start();
+			btnStartStopServer.setText("Stop Server");
+			lblServerStatus.setText("Running");
+			lblServerAddress.setText(address);
+			lblServerPort.setText(Integer.toString(port));
+			if(trayIcon != null)
+				trayIcon.getMenuItemStartStopServer().setLabel("Stop server");
+			else if(ltIcon != null)
+				ltIcon.changeMenuItemLabel("Stop server", ltIcon.getItemStartServer());
+		}else if(server!= null){
+			stopServer();
+			btnStartStopServer.setText("Start server");
+			lblServerStatus.setText("Not Running");
+			lblServerAddress.setText("N/A");
+			lblServerPort.setText("N/A");
+			if(trayIcon != null)
+				trayIcon.getMenuItemStartStopServer().setLabel("Start server");
+			else if(ltIcon != null)
+				ltIcon.changeMenuItemLabel("Start server", ltIcon.getItemStartServer());
 		}
-		lblServerStatus.setText("Running");
-		lblServerAddress.setText(address);
-		lblServerPort.setText(Integer.toString(port));
-	}
-	
-	//Listener method for the stop server button.
-	private void btnStopServerListener(){
-		stopServer();
-		lblServerStatus.setText("Not Running");
-		lblServerAddress.setText("N/A");
-		lblServerPort.setText("N/A");
 	}
 	
 	//Listener method for the copy barcode to clip-board button.
@@ -111,9 +163,17 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		if(useRowbot){
 			useRowbot = false;
 			btnRobot.setText("Turn robot on");
+			if(trayIcon != null)
+				trayIcon.getMenuItemStartStopRobot().setLabel("Turn robot on");
+			else if(ltIcon != null)
+				ltIcon.changeMenuItemLabel("Turn robot on", ltIcon.getItemStartStopRobot());
 		}else{
 			useRowbot = true;
 			btnRobot.setText("Turn robot off");
+			if(trayIcon != null)
+				trayIcon.getMenuItemStartStopRobot().setLabel("Turn robot off");
+			else if(ltIcon != null)
+				ltIcon.changeMenuItemLabel("Turn robot off", ltIcon.getItemStartStopRobot());
 		}
 	}
 	
@@ -127,18 +187,33 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == btnStartServer){
-			btnStartServerListener();
-		}else if(e.getSource() == btnStopserver){
-			btnStopServerListener();
-		}else if(e.getSource() == btnCopyBarcodeToClipboard){
-			btnCopyToClipboardListener();
-		}if(e.getSource() == btnRobot){
+		if(e.getSource() == btnStartStopServer){
+			btnStartStopServerListener();
+			}else if(e.getSource() == btnCopyBarcodeToClipboard){
+				btnCopyToClipboardListener();
+			}if(e.getSource() == btnRobot){
+				btnRobotListener();
+			}else if(e.getSource() == btnCloseToTray){
+				openCloseInterface();
+			}else if(e.getSource() == btnExit){
+				btnExitListener();
+		}
+	}
+	
+	//Linux system tray icon menu items listener.
+	@Override
+	public void handleEvent(Event event) {
+		if(event.widget == ltIcon.getItemShowHideInterface()){
+			openCloseInterface();
+		}else if(event.widget == ltIcon.getItemStartServer()){
+			btnStartStopServerListener();
+		}else if(event.widget == ltIcon.getItemStartStopRobot()){
 			btnRobotListener();
-		}else if(e.getSource() == btnExit){
+		}else if(event.widget == ltIcon.getItemExit()){
 			btnExitListener();
 		}
 	}
+
 
 	//Handle the barcode data when received by server.
 	@Override
@@ -163,4 +238,22 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			ex.printStackTrace();
 		}
 	}
+	
+private class TrayIconActionListener implements ActionListener{
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() == trayIcon.getMenuItemOpenInterface()){
+			openCloseInterface();
+		}else if(e.getSource() == trayIcon.getMenuItemStartStopServer()){
+			btnStartStopServerListener();
+		}else if(e.getSource() == trayIcon.getMenuItemStartStopRobot()){
+			btnRobotListener();
+		}else if(e.getSource() == trayIcon.getMenuItemExit()){
+			btnExitListener();
+		}
+		
+	}
+	
+}
 }

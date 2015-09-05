@@ -30,8 +30,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 /*
- * Last modified on 8/30/2015
- * Added button to turn on/off robot.
+ * Last modified on 9/4/2015
+ * changed starting and stopping of server to one button.
+ * Added button to Minimize to tray.
  */
 
 /**
@@ -50,7 +51,6 @@ public abstract class MainPanelLayout extends JFrame{
 	private JPanel jpResultData = new JPanel(new GridLayout(0,1));
 	private JPanel jpConnectionConfig = new JPanel(new GridBagLayout());
 	private JPanel jpStatusBar = new JPanel(new BorderLayout());
-
 	
 	protected JLabel lblServerAddress = new JLabel("N/A");
 	protected JLabel lblServerPort = new JLabel("N/A");
@@ -63,13 +63,14 @@ public abstract class MainPanelLayout extends JFrame{
 	
 	protected JComboBox<String> jcbInterfaces = new JComboBox<String>();
 
-	protected JTextField jtfPort = new JTextField();
+	protected JTextField jtfPort = new JTextField("9800");
 	
-	protected JButton btnStartServer = new JButton("Start Server");
-	protected JButton btnStopserver = new JButton("Stop Server");
-	protected JButton btnCopyBarcodeToClipboard = new JButton("copy Barcode to Clipboard");
+	protected JButton btnStartStopServer = new JButton("Start server");
+	protected JButton btnCopyBarcodeToClipboard = new JButton("Copy barcode to clipboard");
 	protected JButton btnRobot = new JButton("Turn robot on");
+	protected JButton btnCloseToTray = new JButton("Minimize to tray");
 	protected JButton btnExit = new JButton("Exit");
+
 	
 	public MainPanelLayout(){
 		super("Wirless barcode Scanner Server Interface");
@@ -127,14 +128,14 @@ public abstract class MainPanelLayout extends JFrame{
 	}
 	
 	private void jpButtonsSetup(){
-		addComp(jpButtons, btnStartServer, 1, 1, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 0.5, 0);
+		addComp(jpButtons, btnStartStopServer, 1, 1, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 0.5, 0);
 
 		jplc.insets = new Insets(15, 0, 0, 0);
-		addComp(jpButtons, btnStopserver, 1, 2, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 0, 0);
+		addComp(jpButtons, btnCopyBarcodeToClipboard, 1, 2, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 0.5, 0);
 
-		addComp(jpButtons, btnCopyBarcodeToClipboard, 1, 3, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 0.5, 0);
+		addComp(jpButtons, btnRobot, 1, 3, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 0.5, 0);
 
-		addComp(jpButtons, btnRobot, 1, 4, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 0.5, 0);
+		addComp(jpButtons, btnCloseToTray, 1, 4, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 0, 0);
 
 		addComp(jpButtons, btnExit, 1, 5, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 1, 1);
 
