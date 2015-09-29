@@ -20,12 +20,12 @@ import com.sun.glass.events.KeyEvent;
  */
 public class Robot extends java.awt.Robot {
 	KeyStroke key = null;
-	private char[] sqecialCharictors = null;
+	private char[] specialCharacters = null;
 	private DebugPrinter debugPrinter = null;
 	public Robot() throws AWTException {
 		super();
 		debugPrinter = new DebugPrinter("JBCS-server-debug-report.txt");
-		sqecialCharictors = new char[]{'!', '@', '#', '$', '^', '%', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', '<', '>', '?'};
+		specialCharacters = new char[]{'!', '@', '#', '$', '^', '%', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', '<', '>', '?'};
 	}
 	
 	/**
@@ -38,7 +38,7 @@ public class Robot extends java.awt.Robot {
 			public void run() {
 				try{
 					for(char c : s.toCharArray()){
-						if(new String(sqecialCharictors).indexOf(c)  >= 0){
+						if(new String(specialCharacters).indexOf(c)  >= 0){
 							keyPress(KeyEvent.VK_SHIFT);
 							keyPress((int) KeyBoard.getSpecialCharictor(c));
 							keyRelease((int) KeyBoard.getSpecialCharictor(c));
