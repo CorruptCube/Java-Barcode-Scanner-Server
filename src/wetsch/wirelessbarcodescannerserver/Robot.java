@@ -2,7 +2,6 @@ package wetsch.wirelessbarcodescannerserver;
 
 import java.awt.AWTException;
 import java.io.IOException;
-import javax.swing.KeyStroke;
 import com.sun.glass.events.KeyEvent;
 
 /*
@@ -19,9 +18,8 @@ import com.sun.glass.events.KeyEvent;
  *@version 1.0
  */
 public class Robot extends java.awt.Robot {
-	KeyStroke key = null;
-	private char[] specialCharacters = null;
-	private DebugPrinter debugPrinter = null;
+	private char[] specialCharacters = null;// special characters that need shift key.
+	private DebugPrinter debugPrinter = null;// print the debug output to a file.
 	public Robot() throws AWTException {
 		super();
 		debugPrinter = new DebugPrinter("JBCS-server-debug-report.txt");
