@@ -8,25 +8,24 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
 
+
 /*
- * Last modified on 8/28/2015
+ * Last modified on 9/27/2015
  * Changes:
- * Fixed typos.
- * Added checking if listeners already exist or are not yet added in the listener methods. 
+ * Added support to print stack-trace to debug output file.
  */
 /**
- * This class extends Thread.  It uses this thread to listen for incoming connections from the Wireless barcode scanner Android app.. 
+ * This class extends Thread.  It uses this thread to listen for incoming connections from the Wireless barcode scanner Android app. 
  * The server receives the barcode data transmitted by the app, and makes it available via the BarcodeServerDataListener. 
+ * The server does throws a socket closed exception when the server is stopped.
  *The barcode information that is received is listed below.
  *<li> Barcode Type</li>
  *<li> Barcode</li>  
  * @author kevin
  * @version 1.0
- * 
- *
  */
 public class WirelessBarcodeScannerServer extends Thread{
-	
+	private DebugPrinter debugPrinter = null;
 	private boolean running = false;//Control the thread loop.
 	private ServerSocket server = null;//creates the server socket.
 	private Socket connection = null;//Creates the connection between server and client.
@@ -42,6 +41,7 @@ public class WirelessBarcodeScannerServer extends Thread{
 	 * @param port listening port number.
 	 */
 	public WirelessBarcodeScannerServer(String hostAddress, int port) {
+		debugPrinter = new DebugPrinter("JBCS-server-debug-report.txt");
 		this.hostAddress = hostAddress;
 		this.port = port;
 	}
@@ -74,6 +74,11 @@ public class WirelessBarcodeScannerServer extends Thread{
 			System.out.println("Server stopped.");
 
 		}catch(Exception e){
+			try {
+				debugPrinter.sendDebugToFile(e);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 		super.run();

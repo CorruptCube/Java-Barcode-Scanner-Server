@@ -22,14 +22,13 @@ import org.eclipse.swt.widgets.Listener;
 
 import wetsch.wirelessbarcodescannerserver.BarcodeReceiverEvent;
 import wetsch.wirelessbarcodescannerserver.BarcodeServerDataListener;
+import wetsch.wirelessbarcodescannerserver.DebugPrinter;
 import wetsch.wirelessbarcodescannerserver.Robot;
 import wetsch.wirelessbarcodescannerserver.WirelessBarcodeScannerServer;
 
 /*
-** Last modified on 9/4/2015
-*Added listeners for tray icon.
-*Modified listener for starting and stopping of server.
-*Added OS checking to determine which tray icon load method to use.
+** Last modified on 9/27/2015
+ * Added support to print stack-trace to debug output file.
  */
 
 /**
@@ -39,13 +38,14 @@ import wetsch.wirelessbarcodescannerserver.WirelessBarcodeScannerServer;
  */
 public class MainPanel  extends MainPanelLayout implements BarcodeServerDataListener, ActionListener, Listener{
 	private static final long serialVersionUID = 1L;
-	
+	private DebugPrinter debugPrinter = null;
 	private boolean useRowbot = false;
 	private WirelessBarcodeScannerServer server = null;
 	private LinuxTrayIcon ltIcon = null;
 	private SystemTrayIcon trayIcon = null;
 	
 	public MainPanel() {
+		debugPrinter = new DebugPrinter("JBCS-server-debug-report.txt");
 		if(SystemTray.isSupported() && !System.getProperty("os.name").equals("Linux")){
 			setupSystemTrayIcon();
 		}else{
@@ -53,6 +53,7 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			ltIcon.showIcon();
 		}
 		setupActionListeners();
+		
 	}
 	
 	//Set up listeners.
@@ -62,7 +63,6 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		btnRobot.addActionListener(this);
 		btnExit.addActionListener(this);
 		btnCloseToTray.addActionListener(this);
-
 	}
 	
 	//Setup system tray icon
@@ -72,7 +72,15 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			Image img = Toolkit.getDefaultToolkit().getImage(url);
 			trayIcon = new SystemTrayIcon(img, new TrayIconActionListener());
 		} catch (AWTException e) {
+			try {
+				debugPrinter.sendDebugToFile(e);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				JOptionPane.showMessageDialog(this, e1.getMessage());
+
+			}
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, e.getMessage() + "\nyou can find out more in the debug output file stored at " + debugPrinter.getDebugReportFilePath());
 		}
 	}
 	
@@ -90,8 +98,14 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 				lblMessages.setText("Server shutdown successfuly.");
 			}
 			}catch (InterruptedException | IOException e) {
+				try {
+					debugPrinter.sendDebugToFile(e);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(this, e1.getMessage());
+				}
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "Could not shut down server");
+				JOptionPane.showMessageDialog(this, e.getMessage() + "\nyou can find out more in the debug output file stored at " + debugPrinter.getDebugReportFilePath());
 			}
 	}
 	
@@ -214,7 +228,6 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		}
 	}
 
-
 	//Handle the barcode data when received by server.
 	@Override
 	public void barcodeServerDatareceived(BarcodeReceiverEvent e) {
@@ -235,7 +248,15 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		Calendar cal = Calendar.getInstance();
 		lblMessages.setText("Last barcode received from " + e.getClientInetAddress()+ " at " + df.format(cal.getTime()) + ".");
 		}catch(Exception ex){
+			try {
+				debugPrinter.sendDebugToFile(ex);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				JOptionPane.showMessageDialog(this, ex.getMessage());
+			}
 			ex.printStackTrace();
+			JOptionPane.showMessageDialog(this, ex.getMessage() + "\n you can find out more in the debug output file stored at " + debugPrinter.getDebugReportFilePath());
+
 		}
 	}
 	

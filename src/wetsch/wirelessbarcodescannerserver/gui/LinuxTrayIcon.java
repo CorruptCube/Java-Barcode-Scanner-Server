@@ -1,5 +1,7 @@
 package wetsch.wirelessbarcodescannerserver.gui;
 
+import java.io.IOException;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
@@ -11,8 +13,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tray;
 import org.eclipse.swt.widgets.TrayItem;
 
+import wetsch.wirelessbarcodescannerserver.DebugPrinter;
+
 /*
- * Last modified 9/3/2015
+ * Last moified 9/27/2015
+ * Changes:
+ * Added support to print stack-trace to debug output file.
+
  */
 
 /**
@@ -21,6 +28,7 @@ import org.eclipse.swt.widgets.TrayItem;
  *@version 1.0
  */
 public class LinuxTrayIcon {
+	private DebugPrinter debugPrinter = null;
 	private Thread trayIconThread = null;
 	private Listener listener = null;
 	private Menu menu;
@@ -38,6 +46,7 @@ public class LinuxTrayIcon {
 	 */
 	public LinuxTrayIcon(Listener listener) {
 		this.listener = listener;
+		debugPrinter = new DebugPrinter("JBCS-server-debug-report.txt");
 		setupThread();
 	}
 	
@@ -83,6 +92,11 @@ public class LinuxTrayIcon {
 					display.dispose();
 	
 				}catch(Exception e){
+					try {
+						debugPrinter.sendDebugToFile(e);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 					e.printStackTrace();
 				}
 			}
@@ -109,6 +123,11 @@ public class LinuxTrayIcon {
 				try{
 					item.setText(labelText);
 				}catch(Exception e){
+					try {
+						debugPrinter.sendDebugToFile(e);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 					e.printStackTrace();
 				}
 			}
