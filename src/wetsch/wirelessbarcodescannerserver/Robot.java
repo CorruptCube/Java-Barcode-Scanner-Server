@@ -1,8 +1,8 @@
 package wetsch.wirelessbarcodescannerserver;
 
 import java.awt.AWTException;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
-import com.sun.glass.events.KeyEvent;
 
 /*
  * Last modified: 9/27.2015

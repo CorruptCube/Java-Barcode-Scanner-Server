@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.TrayItem;
 import wetsch.wirelessbarcodescannerserver.DebugPrinter;
 
 /*
- * Last moified 9/27/2015
+ * Last modified 12/30/2015
  * Changes:
  * Added support to print stack-trace to debug output file.
 
@@ -103,7 +103,7 @@ public class LinuxTrayIcon {
 		});
 	}
 	
-	
+	//Setup menu item listener for tray icon.
 	private void setupItemListeners(){
 		for(int i = 0; i < menu.getItemCount(); i++)
 			menu.getItem(i).addListener(SWT.Selection, listener);

@@ -8,14 +8,9 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Collections;
-import java.util.Enumeration;
-
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -29,14 +24,16 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
+import wetsch.wirelessbarcodescannerserver.WirelessBarcodeScannerServer;
+
 /*
- * Last modified on 9/4/2015
- * changed starting and stopping of server to one button.
- * Added button to Minimize to tray.
+ * Last modified on 12/30/2015
+ * Changes:
+ * Rewrote the method that populates the combo box of available interfaces. 
  */
 
 /**
- * This clas holds all the objects and layout for the JFrame.
+ * This class holds all the objects and layout for the JFrame.
  * @author kevin
  *@version 1.0
  */
@@ -87,6 +84,7 @@ public abstract class MainPanelLayout extends JFrame{
 		populatejcbInterfaces();
 	}
 	
+	//Setup the frame layout.
 	private void layoutSetup(){
 		addComp(jpMainPanel, jpServerStatus, 1, 1, 2, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, 0, 0);
 		jpServerStatusSetup();
@@ -105,10 +103,9 @@ public abstract class MainPanelLayout extends JFrame{
 		jpStatusBar.setBorder(BorderFactory.createLineBorder(Color.gray));
 		jpStatusBar.add(lblMessages, BorderLayout.WEST);
 		addComp(jpMainPanel, jpStatusBar, 1, 4, 2, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.BOTH, 0, 0.1);
-
-
 	}
-	
+
+	//Setup the panel that holds the GUI objects for the server status.
 	private void jpServerStatusSetup(){
 		jpServerStatus.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		JLabel l1 = new JLabel("Server status:");
@@ -127,6 +124,7 @@ public abstract class MainPanelLayout extends JFrame{
 		addComp(jpServerStatus, lblServerPort, 2, 3, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 0.5, 0);
 	}
 	
+	//Setup the Panel that holds the buttons.
 	private void jpButtonsSetup(){
 		addComp(jpButtons, btnStartStopServer, 1, 1, 1, 1, GridBagConstraints.LAST_LINE_START, GridBagConstraints.HORIZONTAL, 0.5, 0);
 
@@ -141,6 +139,7 @@ public abstract class MainPanelLayout extends JFrame{
 
 	}
 	
+	//Setup the Table that holds the data received by the server.
 	private void jpResultDataSetup(){
 		String[] columnNames = new String[]{"Barcode Type","Barcode"};
 		DefaultTableModel model = new DefaultTableModel(columnNames,0);
@@ -150,6 +149,7 @@ public abstract class MainPanelLayout extends JFrame{
 		jtbcTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 	
+	//Setup the panel that holds the GUI objects to setup the servers configuration.
 	private void jpConnectionConfigSetup(){
 		
 		JLabel l1 = new JLabel("Interfaces:");
@@ -163,28 +163,18 @@ public abstract class MainPanelLayout extends JFrame{
 		addComp(jpConnectionConfig, jtfPort, 2, 2, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, 1, 1);
 	}
 
+	//Populating the combo box that holds the available IPV4 addresses on the system.
 	private void populatejcbInterfaces(){
 		try {
-			Enumeration<NetworkInterface> nif = NetworkInterface.getNetworkInterfaces();
-			for(NetworkInterface netint : Collections.list(nif)){
-				Enumeration<InetAddress> addresses = netint.getInetAddresses();
-				for(InetAddress addr : Collections.list(addresses)){
-					if(addr instanceof Inet4Address)
-						jcbInterfaces.addItem(addr.getHostAddress());
-				}
-					
-					
-			}
+			if(WirelessBarcodeScannerServer.getAvailableIPV4Addresses().length > 0)
+				jcbInterfaces.setModel(new DefaultComboBoxModel<String>(WirelessBarcodeScannerServer.getAvailableIPV4Addresses()));
 		} catch (SocketException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage());
 		}
-		
 	}
 	
-	
-	
-	
+	//Handles the adding of objects for the grid-bag layout.
 	 private void addComp(JPanel thePanel, JComponent comp, int xPos, int yPos, int compWidth, int compHeight, int place, int stretch, double weightx, double weighty){
 		 jplc.gridx = xPos;
 		 jplc.gridy = yPos;
@@ -196,6 +186,4 @@ public abstract class MainPanelLayout extends JFrame{
 		 jplc.fill = stretch;
 	     thePanel.add(comp, jplc);
 	 }
-
-
 }

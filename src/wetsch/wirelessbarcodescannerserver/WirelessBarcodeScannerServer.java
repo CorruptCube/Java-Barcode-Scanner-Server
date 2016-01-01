@@ -3,16 +3,24 @@ package wetsch.wirelessbarcodescannerserver;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 
 
 /*
- * Last modified on 9/27/2015
+ * Last modified on 12/30/2015
  * Changes:
  * Added support to print stack-trace to debug output file.
+ * Added static method that returns available IPV4 addresses on the system.
  */
 /**
  * This class extends Thread.  It uses this thread to listen for incoming connections from the Wireless barcode scanner Android app. 
@@ -44,6 +52,25 @@ public class WirelessBarcodeScannerServer extends Thread{
 		debugPrinter = new DebugPrinter("JBCS-server-debug-report.txt");
 		this.hostAddress = hostAddress;
 		this.port = port;
+	}
+	
+	/**
+	 * Returns an array of available IPV4 addresses on the system.
+	 * @return String[]
+	 * @throws SocketException
+	 */
+	public static String[] getAvailableIPV4Addresses() throws SocketException{
+		ArrayList<String> v4Addresses = new ArrayList<String>();
+		Enumeration<NetworkInterface> nif = NetworkInterface.getNetworkInterfaces();
+		for(NetworkInterface netint : Collections.list(nif)){
+			Enumeration<InetAddress> addresses = netint.getInetAddresses();
+			for(InetAddress addr : Collections.list(addresses)){
+				if(addr instanceof Inet4Address)
+					v4Addresses.add(addr.getHostAddress());
+			}
+		}
+				return v4Addresses.toArray(new String[v4Addresses.size()]);
+				
 	}
 /*
  * The runnable contends to loop until the running boolean is set to false.

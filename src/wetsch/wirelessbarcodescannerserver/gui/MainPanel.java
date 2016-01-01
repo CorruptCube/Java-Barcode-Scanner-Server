@@ -27,7 +27,7 @@ import wetsch.wirelessbarcodescannerserver.Robot;
 import wetsch.wirelessbarcodescannerserver.WirelessBarcodeScannerServer;
 
 /*
-** Last modified on 9/27/2015
+** Last modified on 12/30/2015
  * Added support to print stack-trace to debug output file.
  */
 
@@ -109,6 +109,7 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			}
 	}
 	
+	//Show or hide the interface window.
 	private void openCloseInterface(){
 		if(isVisible()){
 			setVisible(false);
