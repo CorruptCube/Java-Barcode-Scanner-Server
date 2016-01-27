@@ -22,7 +22,7 @@ public class Robot extends java.awt.Robot {
 	private DebugPrinter debugPrinter = null;// print the debug output to a file.
 	public Robot() throws AWTException {
 		super();
-		debugPrinter = new DebugPrinter("JBCS-server-debug-report.txt");
+		debugPrinter = new DebugPrinter();
 		specialCharacters = new char[]{'!', '@', '#', '$', '^', '%', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', '<', '>', '?'};
 	}
 	

@@ -11,6 +11,7 @@ import java.util.Calendar;
 public class DebugPrinter {
 	
 	private final String homeDir = System.getProperty("user.home");
+	private final File applicationDirectory = new File(homeDir + "/JBCS");
 	private final String filename;
 	
 	/**
@@ -19,8 +20,8 @@ public class DebugPrinter {
 	 * directory of the current user.
 	 * @param filename The filename to write the output to.
 	 */
-	public DebugPrinter(String filename){
-		this.filename = filename;
+	public DebugPrinter(){
+		this.filename  = "JBCS-server-debug-report.txt";
 	}
 	
 	/**
@@ -33,8 +34,10 @@ public class DebugPrinter {
 	 * @throws IOException
 	 */
 	public void sendDebugToFile(Exception e) throws IOException{
-		File report = new File(homeDir+"/"+filename);
-		if(!report.exists())
+		File report = new File(applicationDirectory+"/"+filename);
+		if(!applicationDirectory.exists())
+			applicationDirectory.mkdirs();
+		 if(!report.exists())
 			report.createNewFile();
 		FileWriter fw = new FileWriter(report, true);
 		PrintWriter pw = new PrintWriter(fw);

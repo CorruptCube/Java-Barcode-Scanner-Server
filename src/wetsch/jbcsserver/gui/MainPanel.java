@@ -8,15 +8,19 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -27,8 +31,8 @@ import wetsch.jbcsserver.Robot;
 import wetsch.jbcsserver.WirelessBarcodeScannerServer;
 
 /*
-** Last modified on 12/30/2015
- * Added support to print stack-trace to debug output file.
+** Last modified on 1/23/2016
+ * Added support to print server console output to GUI.
  */
 
 /**
@@ -41,17 +45,15 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 	private DebugPrinter debugPrinter = null;
 	private boolean useRowbot = false;
 	private WirelessBarcodeScannerServer server = null;
-	private LinuxTrayIcon ltIcon = null;
+	private SWATWidgets swtWidgets = null;
 	private SystemTrayIcon trayIcon = null;
 	
 	public MainPanel() {
-		debugPrinter = new DebugPrinter("JBCS-server-debug-report.txt");
+		debugPrinter = new DebugPrinter();
 		if(SystemTray.isSupported() && !System.getProperty("os.name").equals("Linux")){
 			setupSystemTrayIcon();
-		}else{
-			ltIcon = new LinuxTrayIcon(this);
-			ltIcon.showIcon();
-		}
+		}else
+			setupSWATWidgets();
 		setupActionListeners();
 		
 	}
@@ -63,6 +65,13 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		btnRobot.addActionListener(this);
 		btnExit.addActionListener(this);
 		btnCloseToTray.addActionListener(this);
+		btnConsoleClear.addActionListener(this);
+		btnSaveConsole.addActionListener(this);
+	}
+	
+	private void setupSWATWidgets(){
+		swtWidgets = new SWATWidgets(this);
+		swtWidgets.showIcon();
 	}
 	
 	//Setup system tray icon
@@ -115,14 +124,18 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			setVisible(false);
 			if(trayIcon != null)
 				trayIcon.getMenuItemOpenInterface().setLabel("Show interface");
-			else if(ltIcon != null)
-				ltIcon.changeMenuItemLabel("Show interface", ltIcon.getItemShowHideInterface());
+			else if(swtWidgets != null){
+				setVisible(false);
+				swtWidgets.changeMenuItemLabel("Show Interface", swtWidgets.getItemShowHideInterface());
+
+			}
 		}else{
 			setVisible(true);
-			if(trayIcon != null)
+			if(trayIcon != null){
 				trayIcon.getMenuItemOpenInterface().setLabel("Hide interface");
-			else if(ltIcon != null)
-				ltIcon.changeMenuItemLabel("Hide interface", ltIcon.getItemShowHideInterface());
+			}else if(swtWidgets != null){
+				swtWidgets.changeMenuItemLabel("Hide Interface", swtWidgets.getItemShowHideInterface());
+			}
 		}
 	}
 	
@@ -145,8 +158,8 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			lblServerPort.setText(Integer.toString(port));
 			if(trayIcon != null)
 				trayIcon.getMenuItemStartStopServer().setLabel("Stop server");
-			else if(ltIcon != null)
-				ltIcon.changeMenuItemLabel("Stop server", ltIcon.getItemStartServer());
+			else if(swtWidgets != null)
+				swtWidgets.changeMenuItemLabel("Stop server", swtWidgets.getItemStartServer());
 		}else if(server!= null){
 			stopServer();
 			btnStartStopServer.setText("Start server");
@@ -155,8 +168,8 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			lblServerPort.setText("N/A");
 			if(trayIcon != null)
 				trayIcon.getMenuItemStartStopServer().setLabel("Start server");
-			else if(ltIcon != null)
-				ltIcon.changeMenuItemLabel("Start server", ltIcon.getItemStartServer());
+			else if(swtWidgets != null)
+				swtWidgets.changeMenuItemLabel("Start server", swtWidgets.getItemStartServer());
 		}
 	}
 	
@@ -180,15 +193,15 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			btnRobot.setText("Turn robot on");
 			if(trayIcon != null)
 				trayIcon.getMenuItemStartStopRobot().setLabel("Turn robot on");
-			else if(ltIcon != null)
-				ltIcon.changeMenuItemLabel("Turn robot on", ltIcon.getItemStartStopRobot());
+			else if(swtWidgets != null)
+				swtWidgets.changeMenuItemLabel("Turn robot on", swtWidgets.getItemStartStopRobot());
 		}else{
 			useRowbot = true;
 			btnRobot.setText("Turn robot off");
 			if(trayIcon != null)
 				trayIcon.getMenuItemStartStopRobot().setLabel("Turn robot off");
-			else if(ltIcon != null)
-				ltIcon.changeMenuItemLabel("Turn robot off", ltIcon.getItemStartStopRobot());
+			else if(swtWidgets != null)
+				swtWidgets.changeMenuItemLabel("Turn robot off", swtWidgets.getItemStartStopRobot());
 		}
 	}
 	
@@ -198,36 +211,85 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		System.exit(0);
 	}
 	
+	//Listener method for console clear button.
+	private void clearConsole(){
+		jtaServerConsole.setText("");
+		lblMessages.setText("Console cleared.");
+	}
+	
+	/*
+	 * Listener method for save console to file button.
+	 * This method uses SWT libraries to to handle the file dialog for Linux.
+	 * The JVM would crash in Linux using the JFileChooser because of the
+	 * system tray icon loaded by SWT.  The method checks if the os is Linux
+	 * so it can determine if it should use JFileChooser or SWT FileDialog.
+	 */
+	private void saveConsoleToFile(){
+		if(swtWidgets != null){
+			swtWidgets.getDisplay().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					try{
+						org.eclipse.swt.widgets.FileDialog fd = new org.eclipse.swt.widgets.FileDialog(swtWidgets.getShell(), SWT.SAVE);
+						fd.open();
+						if(fd.getFileName() == null)
+							return;
+						File f = new File(fd.getFilterPath() + "/" + fd.getFileName());
+						if(!f.exists())
+							f.createNewFile();
+						FileWriter fw = new FileWriter(f, true);
+						fw.write(jtaServerConsole.getText().toString());
+						fw.close();
+						lblMessages.setText("File saved successfully to " + f.getAbsolutePath());
+					}catch(Exception e){
+						e.printStackTrace();
+						JOptionPane.showMessageDialog(MainPanel.this, e.getMessage());
+					}
+				}
+			});
+		}else{
+		try{
+			File f = null;
+			JFileChooser fc = new JFileChooser();
+			int selection = fc.showSaveDialog(this);
+			if(selection != JFileChooser.APPROVE_OPTION)
+				return;
+			f = new File(fc.getSelectedFile().getAbsolutePath());
+			if(!f.exists())
+				f.createNewFile();
+			FileWriter fw = new FileWriter(f,true);
+			fw.write(jtaServerConsole.getText().toString());
+			fw.close();
+			lblMessages.setText("File saved successfully to " + f.getAbsolutePath());
+		}catch(Exception e){
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, e.getMessage());
+		}
+		}
+	}
+	
 	//Listeners
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnStartStopServer){
 			btnStartStopServerListener();
-			}else if(e.getSource() == btnCopyBarcodeToClipboard){
-				btnCopyToClipboardListener();
-			}if(e.getSource() == btnRobot){
-				btnRobotListener();
-			}else if(e.getSource() == btnCloseToTray){
-				openCloseInterface();
-			}else if(e.getSource() == btnExit){
-				btnExitListener();
+		}else if(e.getSource() == btnCopyBarcodeToClipboard){
+			btnCopyToClipboardListener();
+		}if(e.getSource() == btnRobot){
+			btnRobotListener();
+		}else if(e.getSource() == btnCloseToTray){
+			openCloseInterface();
+		}else if(e.getSource() == btnExit){
+			btnExitListener();
+		}else if(e.getSource() == btnConsoleClear){
+			clearConsole();;
+		}else if(e.getSource() == btnSaveConsole){
+			saveConsoleToFile();
 		}
 	}
 	
-	//Linux system tray icon menu items listener.
-	@Override
-	public void handleEvent(Event event) {
-		if(event.widget == ltIcon.getItemShowHideInterface()){
-			openCloseInterface();
-		}else if(event.widget == ltIcon.getItemStartServer()){
-			btnStartStopServerListener();
-		}else if(event.widget == ltIcon.getItemStartStopRobot()){
-			btnRobotListener();
-		}else if(event.widget == ltIcon.getItemExit()){
-			btnExitListener();
-		}
-	}
+	
 
 	//Handle the barcode data when received by server.
 	@Override
@@ -261,6 +323,26 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		}
 	}
 	
+	@Override
+	public void barcodeServerConsole(String message) {
+		jtaServerConsole.append(message + "\n");
+		
+	}
+	
+	//Linux system tray icon menu items listener.
+	@Override
+	public void handleEvent(Event event) {
+		if(event.widget == swtWidgets.getItemShowHideInterface()){
+			openCloseInterface();
+		}else if(event.widget == swtWidgets.getItemStartServer()){
+			btnStartStopServerListener();
+		}else if(event.widget == swtWidgets.getItemStartStopRobot()){
+			btnRobotListener();
+		}else if(event.widget == swtWidgets.getItemExit()){
+			btnExitListener();
+		}
+	}
+
 private class TrayIconActionListener implements ActionListener{
 
 	@Override
@@ -276,6 +358,5 @@ private class TrayIconActionListener implements ActionListener{
 		}
 		
 	}
-	
 }
 }

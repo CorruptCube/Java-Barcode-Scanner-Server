@@ -10,7 +10,10 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -20,11 +23,9 @@ import wetsch.jbcsclient.ServerClientCommand;
 
 
 /*
- * Last modified on 1/5/2016
+ * Last modified on 1/23/2016
  * Changes:
- *Rewrote the way the barcode data is sent over to the server.
- *The client now sends data via an object to the server.
- *Added enum type that the server uses for receiving client commands and requests.
+ *Added support for the server to send console messages.
  */
 /**
  * This class extends Thread.  It uses this thread to listen for incoming connections from the Wireless barcode scanner Android app. 
@@ -46,6 +47,7 @@ public class WirelessBarcodeScannerServer extends Thread{
 	private HashSet<BarcodeServerDataListener> listeners = null;//Hold listeners that listen for updates.
 	private String hostAddress = null;// Servers listening address.
 	private int port = 0;//The port number the server socket listens on.
+
 	
 	/**
 	 * The constructor takes in a string and integer that represents the host  port number to listen on.
@@ -53,7 +55,7 @@ public class WirelessBarcodeScannerServer extends Thread{
 	 * @param port listening port number.
 	 */
 	public WirelessBarcodeScannerServer(String hostAddress, int port) {
-		debugPrinter = new DebugPrinter("JBCS-server-debug-report.txt");
+		debugPrinter = new DebugPrinter();
 		this.hostAddress = hostAddress;
 		this.port = port;
 	}
@@ -74,8 +76,8 @@ public class WirelessBarcodeScannerServer extends Thread{
 			}
 		}
 				return v4Addresses.toArray(new String[v4Addresses.size()]);
-				
 	}
+	
 /*
  * The runnable contends to loop until the running boolean is set to false.
  * Each cycle checks for a incoming connection.  If a connection is made, 
@@ -91,21 +93,20 @@ public class WirelessBarcodeScannerServer extends Thread{
 			server = new ServerSocket();
 			server.bind(new InetSocketAddress(hostAddress, port));
 			running = true;
-			System.out.println("WBS Server is running.");
+			sendMessageToConsole(getDateTime() + ": JBCS server is running");
 			while(running){
 				if(connection == null){
 					ListenForConnections();
-					System.out.println("Device connected");
+					sendMessageToConsole(getDateTime() + ": Device connected with IP Address" + connection.getInetAddress().toString());
 					//sleep(100);
 				}else{
 					setupStreams();
 					handelData();
 				}
 			}
-			System.out.println("Server stopped.");
-
 		}catch(Exception e){
 			try {
+				sendMessageToConsole(getDateTime() + ": Server shutdown successfully");
 				debugPrinter.sendDebugToFile(e);
 			} catch (IOException e1) {
 				e1.printStackTrace();
@@ -117,21 +118,25 @@ public class WirelessBarcodeScannerServer extends Thread{
 	
 	//Handles the data received by connected client devices. 
 	private void handelData() throws ClassNotFoundException, IOException{
+		String clientInetAddress = connection.getInetAddress().toString();
 		Object obj = in.readObject();
 		if(obj instanceof BarCodeData){
 			BarCodeData data = (BarCodeData) obj;
-			String clientInetAddress = connection.getInetAddress().toString();
 			if(listeners != null){
 			for(BarcodeServerDataListener l : listeners)
 				l.barcodeServerDatareceived(new BarcodeReceiverEvent(this, data, clientInetAddress));
 			}
 			out.writeObject(ServerClientCommand.dataReceived);
 			out.flush();
+			sendMessageToConsole(getDateTime() + ": Barcode data receieved by client with IP address" + clientInetAddress);
+
 		}else if(obj instanceof ServerClientCommand){
 			ServerClientCommand request = (ServerClientCommand) obj;
 			if(request == ServerClientCommand.connectionOK){
 				out.writeObject(request);
 				out.flush();
+				sendMessageToConsole(getDateTime() + ": Connection check from device with IP address" + clientInetAddress);
+
 			}
 		}
 		closeConnection();
@@ -208,5 +213,19 @@ public class WirelessBarcodeScannerServer extends Thread{
 		listeners = null;
 	}
 	
+	//Get current date and time.
+	private String getDateTime(){
+		DateFormat df = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
+		Calendar cal = Calendar.getInstance();
+		return df.format(cal.getTime());
+	}
+	
+	//Send message to console.
+	private void sendMessageToConsole(String message){
+		if(listeners != null){
+		for(BarcodeServerDataListener l : listeners)
+			l.barcodeServerConsole(message);
+		}
 
+	}
 }
