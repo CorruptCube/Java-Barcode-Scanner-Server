@@ -22,6 +22,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 
 import wetsch.jbcsserver.BarcodeReceiverEvent;
@@ -31,8 +32,8 @@ import wetsch.jbcsserver.Robot;
 import wetsch.jbcsserver.WirelessBarcodeScannerServer;
 
 /*
-** Last modified on 1/23/2016
- * Added support to print server console output to GUI.
+** Last modified on 2/6/2016
+ * Fixed the permission denied error when canceling the save console file dialog. 
  */
 
 /**
@@ -230,9 +231,10 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 				@Override
 				public void run() {
 					try{
-						org.eclipse.swt.widgets.FileDialog fd = new org.eclipse.swt.widgets.FileDialog(swtWidgets.getShell(), SWT.SAVE);
+						FileDialog fd = new FileDialog(swtWidgets.getShell(), SWT.SAVE);
+						fd.setText("Save console output.");
 						fd.open();
-						if(fd.getFileName() == null)
+						if(fd.getFileName().equals("Untitled"))
 							return;
 						File f = new File(fd.getFilterPath() + "/" + fd.getFileName());
 						if(!f.exists())
@@ -248,23 +250,23 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 				}
 			});
 		}else{
-		try{
-			File f = null;
-			JFileChooser fc = new JFileChooser();
-			int selection = fc.showSaveDialog(this);
-			if(selection != JFileChooser.APPROVE_OPTION)
-				return;
-			f = new File(fc.getSelectedFile().getAbsolutePath());
-			if(!f.exists())
-				f.createNewFile();
-			FileWriter fw = new FileWriter(f,true);
-			fw.write(jtaServerConsole.getText().toString());
-			fw.close();
-			lblMessages.setText("File saved successfully to " + f.getAbsolutePath());
-		}catch(Exception e){
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, e.getMessage());
-		}
+			try{
+				File f = null;
+				JFileChooser fc = new JFileChooser();
+				int selection = fc.showSaveDialog(this);
+				if(selection != JFileChooser.APPROVE_OPTION)
+					return;
+				f = new File(fc.getSelectedFile().getAbsolutePath());
+				if(!f.exists())
+					f.createNewFile();
+				FileWriter fw = new FileWriter(f,true);
+				fw.write(jtaServerConsole.getText().toString());
+				fw.close();
+				lblMessages.setText("File saved successfully to " + f.getAbsolutePath());
+			}catch(Exception e){
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(this, e.getMessage());
+			}
 		}
 	}
 	
@@ -319,14 +321,12 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			}
 			ex.printStackTrace();
 			JOptionPane.showMessageDialog(this, ex.getMessage() + "\n you can find out more in the debug output file stored at " + debugPrinter.getDebugReportFilePath());
-
 		}
 	}
 	
 	@Override
 	public void barcodeServerConsole(String message) {
 		jtaServerConsole.append(message + "\n");
-		
 	}
 	
 	//Linux system tray icon menu items listener.
@@ -356,7 +356,6 @@ private class TrayIconActionListener implements ActionListener{
 		}else if(e.getSource() == trayIcon.getMenuItemExit()){
 			btnExitListener();
 		}
-		
 	}
 }
 }
