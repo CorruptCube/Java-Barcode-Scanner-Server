@@ -32,9 +32,9 @@ import wetsch.jbcsserver.DebugPrinter;
 import wetsch.jbcsserver.WirelessBarcodeScannerServer;
 
 /*
- * Last modified on 1/23/2016
+ * Last modified on 2/8/2016
  * Changes:
- * Added text area to display console messages from the server. 
+ * Added button to save barcode data table to a CSV file.
  */
 
 /**
@@ -79,7 +79,7 @@ public abstract class MainPanelLayout extends JFrame{
 	protected JButton btnExit = new JButton("Exit");
 	protected JButton btnConsoleClear = new JButton(new ImageIcon(getClass().getResource("/console-clear-btn.png")));
 	protected JButton btnSaveConsole = new JButton(new ImageIcon(getClass().getResource("/console-save-btn.png")));
-	
+	protected JButton btnSaveCsvFile = new JButton(new ImageIcon(getClass().getResource("/save-csv-file-btn.png")));
 	public MainPanelLayout(){
 		super("Wirless barcode Scanner Server Interface");
 		setSize(screen.width/2, screen.height/2+100);
@@ -187,14 +187,17 @@ public abstract class MainPanelLayout extends JFrame{
 	}
 	
 	private void jpServerConsoleSetup(){
+		btnSaveCsvFile.setBorderPainted(false);
+		btnSaveCsvFile.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+		btnSaveCsvFile.setToolTipText("Save barcode data to CSV file.");
+		jpServerConsoleButtons.add(btnSaveCsvFile);
+
 		jtaServerConsole = new JTextArea();
 		jtaServerConsole.setToolTipText("Server Console.");
 		jtaServerConsole.setLineWrap(true);
 		jtaServerConsole.setEditable(false);
 		jspServerConsole = new JScrollPane(jtaServerConsole);
 		jpServerConsole.add(jspServerConsole);
-		
-		
 		
 		btnConsoleClear.setBorderPainted(false);
 		btnConsoleClear.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
@@ -206,7 +209,6 @@ public abstract class MainPanelLayout extends JFrame{
 		btnSaveConsole.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 		btnSaveConsole.setToolTipText("Save console to file.");
 		jpServerConsoleButtons.add(btnSaveConsole);
-		
 	}
 
 

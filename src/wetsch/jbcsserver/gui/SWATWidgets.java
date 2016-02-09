@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tray;
 import org.eclipse.swt.widgets.TrayItem;
@@ -185,6 +186,23 @@ public class SWATWidgets {
 	}
 	
 	/**
+	 * Shows an error message dialog.
+	 * @param message Message text.
+	 */
+	public void showMessageBoxError(String message){
+		display.asyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR);
+				mb.setText("Error");
+				mb.setMessage(message);
+				mb.open();
+			}
+		});
+	}
+	
+	/**
 	 * Returns the exit program menu item.
 	 * @return MenuItem
 	 */
@@ -192,10 +210,18 @@ public class SWATWidgets {
 		return itemExit;
 	}
 	
+	/**
+	 * Returns the Display object for SWT.
+	 * @return Display
+	 */
 	public Display getDisplay(){
 		return display;
 	}
 	
+	/**
+	 * Returns the Shell object for SWT.
+	 * @return Shell
+	 */
 	public Shell getShell(){
 		return shell;
 	}

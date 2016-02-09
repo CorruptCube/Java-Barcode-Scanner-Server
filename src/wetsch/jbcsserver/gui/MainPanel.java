@@ -27,13 +27,14 @@ import org.eclipse.swt.widgets.Listener;
 
 import wetsch.jbcsserver.BarcodeReceiverEvent;
 import wetsch.jbcsserver.BarcodeServerDataListener;
+import wetsch.jbcsserver.CsvFileWritter;
 import wetsch.jbcsserver.DebugPrinter;
 import wetsch.jbcsserver.Robot;
 import wetsch.jbcsserver.WirelessBarcodeScannerServer;
 
 /*
-** Last modified on 2/6/2016
- * Fixed the permission denied error when canceling the save console file dialog. 
+** Last modified on 2/8/2016
+ * Added support to send the barcode data table to a csv file.
  */
 
 /**
@@ -68,8 +69,10 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		btnCloseToTray.addActionListener(this);
 		btnConsoleClear.addActionListener(this);
 		btnSaveConsole.addActionListener(this);
+		btnSaveCsvFile.addActionListener(this);
 	}
 	
+	//Setup SWT widgets.
 	private void setupSWATWidgets(){
 		swtWidgets = new SWATWidgets(this);
 		swtWidgets.showIcon();
@@ -93,6 +96,7 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			JOptionPane.showMessageDialog(this, e.getMessage() + "\nyou can find out more in the debug output file stored at " + debugPrinter.getDebugReportFilePath());
 		}
 	}
+	
 	
 	/*
 	 * If server is not = to null, shut down the server thread.
@@ -138,6 +142,20 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 				swtWidgets.changeMenuItemLabel("Hide Interface", swtWidgets.getItemShowHideInterface());
 			}
 		}
+	}
+	
+	private String[][] getBarcodeTableData(){
+		if(jtbcTable.getRowCount() == 0)
+			return null;
+		String[][] data = new String[jtbcTable.getRowCount()+1][jtbcTable.getColumnCount()];
+		for(int c = 0; c < jtbcTable.getColumnCount(); c++)
+			data[0][c] = jtbcTable.getColumnModel().getColumn(c).getHeaderValue().toString();
+		for(int r = 1; r < data.length; r++){
+			for(int c = 0; c < data[r].length; c++){
+				data[r][c] = jtbcTable.getValueAt(r-1, c).toString();
+			}
+		}
+		return data;
 	}
 	
 	/*
@@ -245,7 +263,7 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 						lblMessages.setText("File saved successfully to " + f.getAbsolutePath());
 					}catch(Exception e){
 						e.printStackTrace();
-						JOptionPane.showMessageDialog(MainPanel.this, e.getMessage());
+						swtWidgets.showMessageBoxError(e.getMessage());
 					}
 				}
 			});
@@ -263,6 +281,47 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 				fw.write(jtaServerConsole.getText().toString());
 				fw.close();
 				lblMessages.setText("File saved successfully to " + f.getAbsolutePath());
+			}catch(Exception e){
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(this, e.getMessage());
+			}
+		}
+	}
+	
+	//Listener method for saving barcode table data to CSV file.	
+	private void saveBarcodeDataTableAsCsvFile(){
+		if(jtbcTable.getRowCount() == 0){
+			JOptionPane.showMessageDialog(this, "There are no records in the table.");
+			return;
+		}
+		if(swtWidgets != null){
+			swtWidgets.getDisplay().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					try{
+						FileDialog fd = new FileDialog(swtWidgets.getShell(), SWT.SAVE);
+						fd.setText("Save console output.");
+						fd.open();
+						if(fd.getFileName().equals("Untitled"))
+							return;
+						CsvFileWritter cfw = new CsvFileWritter(getBarcodeTableData(), "|");
+						cfw.writeCsvFile(fd.getFilterPath() + "/" + fd.getFileName());
+						lblMessages.setText("File saved successfully to " + fd.getFilterPath() + "/" + fd.getFileName());
+					}catch(Exception e){
+						e.printStackTrace();
+						swtWidgets.showMessageBoxError(e.getMessage());
+					}
+				}
+			});
+		}else{
+			try{
+				JFileChooser fc = new JFileChooser();
+				int selection = fc.showSaveDialog(this);
+				if(selection != JFileChooser.APPROVE_OPTION)
+					return;
+				CsvFileWritter cfw = new CsvFileWritter(getBarcodeTableData(), "|");
+				cfw.writeCsvFile(fc.getSelectedFile().getAbsolutePath());
+				lblMessages.setText("File saved successfully to " + fc.getSelectedFile().getAbsolutePath());
 			}catch(Exception e){
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(this, e.getMessage());
@@ -288,6 +347,8 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			clearConsole();;
 		}else if(e.getSource() == btnSaveConsole){
 			saveConsoleToFile();
+		}else if(e.getSource() == btnSaveCsvFile){
+			saveBarcodeDataTableAsCsvFile();
 		}
 	}
 	

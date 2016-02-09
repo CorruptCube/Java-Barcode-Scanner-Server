@@ -2,6 +2,11 @@
 Collects the barcode data from an android device running the client app.  
 
 /*
+2/8/2016
+Added support to save the barcode data and types table to a CSV file.
+*/
+
+/*
 1/26/2016
 Added server console support.
 */
