@@ -17,9 +17,9 @@ import org.eclipse.swt.widgets.TrayItem;
 import wetsch.jbcsserver.DebugPrinter;
 
 /*
- * Last modified 12/30/2015
+ * Last modified 2/8/2016
  * Changes:
- * Added support to print stack-trace to debug output file.
+ * Added error message dialog box method.
 
  */
 
