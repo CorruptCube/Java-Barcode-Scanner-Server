@@ -33,8 +33,8 @@ import wetsch.jbcsserver.Robot;
 import wetsch.jbcsserver.WirelessBarcodeScannerServer;
 
 /*
-** Last modified on 2/8/2016
- * Added support to send the barcode data table to a csv file.
+** Last modified on 2/22/2016
+ * Added some debugging lines.
  */
 
 /**
@@ -44,11 +44,11 @@ import wetsch.jbcsserver.WirelessBarcodeScannerServer;
  */
 public class MainPanel  extends MainPanelLayout implements BarcodeServerDataListener, ActionListener, Listener{
 	private static final long serialVersionUID = 1L;
-	private DebugPrinter debugPrinter = null;
-	private boolean useRowbot = false;
-	private WirelessBarcodeScannerServer server = null;
-	private SWATWidgets swtWidgets = null;
-	private SystemTrayIcon trayIcon = null;
+	private DebugPrinter debugPrinter = null;//Object to write debug output to file.
+	private boolean useRowbot = false;//Determine if to use robot.
+	private WirelessBarcodeScannerServer server = null;//Barcode scanner server object.
+	private SWATWidgets swtWidgets = null;//SWT widgets object.
+	private SystemTrayIcon trayIcon = null;//Windows system tray icon
 	
 	public MainPanel() {
 		debugPrinter = new DebugPrinter();
@@ -132,7 +132,6 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			else if(swtWidgets != null){
 				setVisible(false);
 				swtWidgets.changeMenuItemLabel("Show Interface", swtWidgets.getItemShowHideInterface());
-
 			}
 		}else{
 			setVisible(true);
@@ -262,8 +261,13 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 						fw.close();
 						lblMessages.setText("File saved successfully to " + f.getAbsolutePath());
 					}catch(Exception e){
-						e.printStackTrace();
-						swtWidgets.showMessageBoxError(e.getMessage());
+						try {
+							debugPrinter.sendDebugToFile(e);
+							swtWidgets.showMessageBoxError(e.getMessage());
+						} catch (IOException e1) {
+							e1.printStackTrace();
+							swtWidgets.showMessageBoxError(e1.getMessage());
+						}
 					}
 				}
 			});
@@ -282,8 +286,13 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 				fw.close();
 				lblMessages.setText("File saved successfully to " + f.getAbsolutePath());
 			}catch(Exception e){
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, e.getMessage());
+				try {
+					debugPrinter.sendDebugToFile(e);
+					JOptionPane.showMessageDialog(this, e.getMessage());
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(this, e1.getMessage());
+				}
 			}
 		}
 	}
@@ -308,8 +317,13 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 						cfw.writeCsvFile(fd.getFilterPath() + "/" + fd.getFileName());
 						lblMessages.setText("File saved successfully to " + fd.getFilterPath() + "/" + fd.getFileName());
 					}catch(Exception e){
-						e.printStackTrace();
-						swtWidgets.showMessageBoxError(e.getMessage());
+						try {
+							debugPrinter.sendDebugToFile(e);
+							swtWidgets.showMessageBoxError(e.getMessage());
+						} catch (IOException e1) {
+							e1.printStackTrace();
+							swtWidgets.showMessageBoxError(e1.getMessage());
+						}
 					}
 				}
 			});
@@ -323,8 +337,13 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 				cfw.writeCsvFile(fc.getSelectedFile().getAbsolutePath());
 				lblMessages.setText("File saved successfully to " + fc.getSelectedFile().getAbsolutePath());
 			}catch(Exception e){
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, e.getMessage());
+				try {
+					debugPrinter.sendDebugToFile(e);
+					JOptionPane.showMessageDialog(this, e.getMessage());
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(this, e1.getMessage());
+				}
 			}
 		}
 	}
