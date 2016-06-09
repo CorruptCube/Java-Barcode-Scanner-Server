@@ -96,7 +96,7 @@ public class WirelessBarcodeScannerServer extends Thread{
 			while(running){
 				if(connection == null){
 					ListenForConnections();
-					sendMessageToConsole(getDateTime() + ": Device connected with IP Address" + connection.getInetAddress().toString());
+					sendMessageToConsole(getDateTime() + ": Device connected with IP Address " + connection.getInetAddress().toString());
 				}else{
 					setupStreams();
 					handelData();
@@ -207,7 +207,7 @@ public class WirelessBarcodeScannerServer extends Thread{
 				BarCodeData data = new BarCodeData(bType, bData);
 				for(BarcodeServerDataListener l : listeners)
 					l.barcodeServerDatareceived(new BarcodeReceiverEvent(this, data, clientInetAddress));
-				sendMessageToConsole(getDateTime() +":" + "Data received from from client with address " + clientInetAddress);
+				sendMessageToConsole(getDateTime() +":" + "Data received from client with address " + clientInetAddress);
 				break;
 			case "CHECK_CONNECTION":
 				out.println("Connection to server is ok.");
