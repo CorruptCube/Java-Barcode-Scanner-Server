@@ -22,7 +22,7 @@ import java.util.HashSet;
 import wetsch.jbcsclient.BarCodeData;
 
 /*
- * Last modified on 6/8/2016
+ * Last modified on 6/9/2016
  * Changes:
  *Fixed input/output streams so as to prevent telnet connections from crashing the server.
  */
@@ -92,11 +92,11 @@ public class WirelessBarcodeScannerServer extends Thread{
 			server = new ServerSocket();
 			server.bind(new InetSocketAddress(hostAddress, port));
 			running = true;
-			sendMessageToConsole(getDateTime() + ": JBCS server is running");
+			sendMessageToConsole("JBCS server is running");
 			while(running){
 				if(connection == null){
 					ListenForConnections();
-					sendMessageToConsole(getDateTime() + ": Device connected with IP Address " + connection.getInetAddress().toString());
+					sendMessageToConsole("Device connected with IP Address " + connection.getInetAddress().toString());
 				}else{
 					setupStreams();
 					handelData();
@@ -114,13 +114,16 @@ public class WirelessBarcodeScannerServer extends Thread{
 	}
 	
 	/**
-	 * Signals the thread to finish and shut down the server.
+	 * Signals the thread to finish and shut down the server.  
+	 * Any thread currently blocked in accept() will throw a SocketException.  
+	 * If the server is shutdown by calling this method, ignore the socket 
+	 * closed exceptions in the debug report logs.
 	 * @throws IOException 
 	 */
 	public void shutDownServer() throws IOException{
 		server.close();
 		running = false;
-		sendMessageToConsole(getDateTime() + ": Server shutdown successfully");
+		sendMessageToConsole("Server shutdown successfully");
 	}
 	
 	/**
@@ -193,7 +196,19 @@ public class WirelessBarcodeScannerServer extends Thread{
 		}
 	}
 	
-	//Handles the data received by connected client devices. 
+	/*
+	 * Handles the data received by connected client devices.
+	 * Commands passed:
+	 * SEND_BARCODE_DATA:
+	 * The first value is the barcode type.
+	 * The second value is the value stored in the barcode.
+	 * CHECK_CONNECTION:
+	 * If the command is received, the server will responds
+	 * back with a message indicating that the connection is okay.
+	 * Any unrecognized commands will send a message back to the client
+	 * the server responded with invalid command.
+	 * Once the server finishes, it will close the current connection.
+	 */
 	private void handelData() throws ClassNotFoundException, IOException{
 		String clientInetAddress = connection.getInetAddress().toString();
 		String message = in.readLine();
@@ -207,17 +222,17 @@ public class WirelessBarcodeScannerServer extends Thread{
 				BarCodeData data = new BarCodeData(bType, bData);
 				for(BarcodeServerDataListener l : listeners)
 					l.barcodeServerDatareceived(new BarcodeReceiverEvent(this, data, clientInetAddress));
-				sendMessageToConsole(getDateTime() +":" + "Data received from client with address " + clientInetAddress);
+				sendMessageToConsole("Data received from client with address " + clientInetAddress);
 				break;
 			case "CHECK_CONNECTION":
 				out.println("Connection to server is ok.");
 				out.flush();
-				sendMessageToConsole(getDateTime() +":" + "Connection check from client with address " + clientInetAddress);
+				sendMessageToConsole("Connection check from client with address " + clientInetAddress);
 				break;
 			default:
 				out.println("Server responded with invalid command");
 				out.flush();
-				sendMessageToConsole(getDateTime() +":" + "Invalid message from client with address " + clientInetAddress);
+				sendMessageToConsole("Invalid message from client with address " + clientInetAddress);
 				break;
 			}
 		closeConnection();
@@ -234,15 +249,21 @@ public class WirelessBarcodeScannerServer extends Thread{
 		connection = null;
 	}
 	
-	//Send message to console.
+	/*
+	 * If a class implements this listener, it will send console output back to those classes.
+	 * This is called when a client connects and sends messages to the server.
+	 */
 	private void sendMessageToConsole(String message){
 		if(listeners != null){
 		for(BarcodeServerDataListener l : listeners)
-			l.barcodeServerConsole(message);
+			l.barcodeServerConsole(getDateTime() +": " + message);
 		}
 	}
 	
-	//Get current date and time.
+	/*
+	 * This method gets the current date and time when called.
+	 * Used by the console to set the date and time on a console message.
+	 */
 	private String getDateTime(){
 		DateFormat df = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 		Calendar cal = Calendar.getInstance();

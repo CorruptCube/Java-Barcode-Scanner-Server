@@ -72,13 +72,25 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		btnSaveCsvFile.addActionListener(this);
 	}
 	
-	//Setup SWT widgets.
+	/*
+	 * Setup SWT widgets.
+	 * These libraries are used to load the system tray icon for Linux.
+	 * The main Java API does not load the system tray icon  correctly for Nome-shell.
+	 * The SWT libraries are also used with saving CSV and console to file because JFileChooser 
+	 * clashes with the SWT thread. 
+	 */
 	private void setupSWATWidgets(){
 		swtWidgets = new SWATWidgets(this);
 		swtWidgets.showIcon();
 	}
 	
-	//Setup system tray icon
+	/*
+	 * Set up the system tray icon for Windows.
+	 * The SWT libraries are not loaded and used 
+	 * if the Operating-system is detected as Windows.
+	 * The JfileChooser is also used instead of the SWT 
+	 * widget for choosing a file to save CSV and console.
+	 */
 	private void setupSystemTrayIcon(){
 		try {
 			URL url = System.class.getResource("/tray_icon-16x16.png");
@@ -90,7 +102,6 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			} catch (IOException e1) {
 				e1.printStackTrace();
 				JOptionPane.showMessageDialog(this, e1.getMessage());
-
 			}
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage() + "\nyou can find out more in the debug output file stored at " + debugPrinter.getDebugReportFilePath());
@@ -123,25 +134,6 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			}
 	}
 	
-	//Show or hide the interface window.
-	private void openCloseInterface(){
-		if(isVisible()){
-			setVisible(false);
-			if(trayIcon != null)
-				trayIcon.getMenuItemOpenInterface().setLabel("Show interface");
-			else if(swtWidgets != null){
-				setVisible(false);
-				swtWidgets.changeMenuItemLabel("Show Interface", swtWidgets.getItemShowHideInterface());
-			}
-		}else{
-			setVisible(true);
-			if(trayIcon != null){
-				trayIcon.getMenuItemOpenInterface().setLabel("Hide interface");
-			}else if(swtWidgets != null){
-				swtWidgets.changeMenuItemLabel("Hide Interface", swtWidgets.getItemShowHideInterface());
-			}
-		}
-	}
 	
 	private String[][] getBarcodeTableData(){
 		if(jtbcTable.getRowCount() == 0)
@@ -223,6 +215,30 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		}
 	}
 	
+	/*
+	 * Listener method for show or hide the interface window.
+	 * The interface can also be shown or hiden from the 
+	 * system tray icon.
+	 */
+	private void openCloseInterface(){
+		if(isVisible()){
+			setVisible(false);
+			if(trayIcon != null)
+				trayIcon.getMenuItemOpenInterface().setLabel("Show interface");
+			else if(swtWidgets != null){
+				setVisible(false);
+				swtWidgets.changeMenuItemLabel("Show Interface", swtWidgets.getItemShowHideInterface());
+			}
+		}else{
+			setVisible(true);
+			if(trayIcon != null){
+				trayIcon.getMenuItemOpenInterface().setLabel("Hide interface");
+			}else if(swtWidgets != null){
+				swtWidgets.changeMenuItemLabel("Hide Interface", swtWidgets.getItemShowHideInterface());
+			}
+		}
+	}
+
 	//Listener method for the exit button.
 	private void btnExitListener(){
 		stopServer();
@@ -239,17 +255,19 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 	 * Listener method for save console to file button.
 	 * This method uses SWT libraries to to handle the file dialog for Linux.
 	 * The JVM would crash in Linux using the JFileChooser because of the
-	 * system tray icon loaded by SWT.  The method checks if the os is Linux
+	 * system tray icon loaded by SWT.
+	 * The method checks if the OS is Linux
 	 * so it can determine if it should use JFileChooser or SWT FileDialog.
 	 */
 	private void saveConsoleToFile(){
+		String dialogTitle = "Save console output.";
 		if(swtWidgets != null){
 			swtWidgets.getDisplay().asyncExec(new Runnable() {
 				@Override
 				public void run() {
 					try{
 						FileDialog fd = new FileDialog(swtWidgets.getShell(), SWT.SAVE);
-						fd.setText("Save console output.");
+						fd.setText(dialogTitle);
 						fd.open();
 						if(fd.getFileName().equals("Untitled"))
 							return;
@@ -275,6 +293,7 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			try{
 				File f = null;
 				JFileChooser fc = new JFileChooser();
+				fc.setDialogTitle(dialogTitle);
 				int selection = fc.showSaveDialog(this);
 				if(selection != JFileChooser.APPROVE_OPTION)
 					return;
@@ -297,8 +316,15 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		}
 	}
 	
-	//Listener method for saving barcode table data to CSV file.	
+	/*Listener method for saving bar-code table data to CSV file.
+	 * This method uses SWT libraries to to handle the file dialog for Linux.
+	 * The JVM would crash in Linux using the JFileChooser because of the
+	 * system tray icon loaded by SWT.
+	 * The method checks if the OS is Linux
+	 * so it can determine if it should use JFileChooser or SWT FileDialog.
+	 */
 	private void saveBarcodeDataTableAsCsvFile(){
+		String dialogTitle = "Save table data output.";
 		if(jtbcTable.getRowCount() == 0){
 			JOptionPane.showMessageDialog(this, "There are no records in the table.");
 			return;
@@ -309,7 +335,7 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 				public void run() {
 					try{
 						FileDialog fd = new FileDialog(swtWidgets.getShell(), SWT.SAVE);
-						fd.setText("Save console output.");
+						fd.setText(dialogTitle);
 						fd.open();
 						if(fd.getFileName().equals("Untitled"))
 							return;
@@ -330,6 +356,7 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		}else{
 			try{
 				JFileChooser fc = new JFileChooser();
+				fc.setDialogTitle(dialogTitle);
 				int selection = fc.showSaveDialog(this);
 				if(selection != JFileChooser.APPROVE_OPTION)
 					return;
@@ -348,7 +375,7 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		}
 	}
 	
-	//Listeners
+	//Implemented Listeners
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -370,8 +397,6 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			saveBarcodeDataTableAsCsvFile();
 		}
 	}
-	
-	
 
 	//Handle the barcode data when received by server.
 	@Override

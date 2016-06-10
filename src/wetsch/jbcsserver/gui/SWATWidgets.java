@@ -29,17 +29,17 @@ import wetsch.jbcsserver.DebugPrinter;
  *@version 1.0
  */
 public class SWATWidgets {
-	private DebugPrinter debugPrinter = null;
-	private Thread trayIconThread = null;
-	private Listener listener = null;
-	private Menu menu;
-	private Shell shell;
-	private Display display;
-	private Image image = null;
-	private MenuItem itemShowHideInterface;
-	private MenuItem itemStartServer;
-	private MenuItem itemStartStopRobot;
-	private MenuItem itemExit;
+	private DebugPrinter debugPrinter = null;//Debug printer object.
+	private Thread swtThread = null;//Thread for SWT widgets.
+	private Listener listener = null;//Listener for the menu items.
+	private Menu menu;//System tray incon menu.
+	private Shell shell;//SWT shell.
+	private Display display;//SWT Display
+	private Image image = null;// System tray icon image.
+	private MenuItem itemShowHideInterface;//Menu item to show/hide interface.
+	private MenuItem itemStartServer;//Menu item to start/stop the server.
+	private MenuItem itemStartStopRobot;//Menu item to turn on/off robot.
+	private MenuItem itemExit;//Menu item to exit program.
 	
 	/**
 	 * Takes a event listener.
@@ -53,7 +53,7 @@ public class SWATWidgets {
 	
 	//Setup thread for icon to run on.
 	private void setupThread(){
-		trayIconThread = new Thread(new Runnable() {
+		swtThread = new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -76,12 +76,12 @@ public class SWATWidgets {
 					}
 					e.printStackTrace();
 				}
-				System.out.println("closed");
 			}
 			
 		});
 	}
 	
+	//Setup the system system tray icon.
 	public void setupsystemTrayIcon(){
 		image = new Image(display, getClass().getResourceAsStream("/tray_icon.png"));
 
@@ -145,9 +145,12 @@ public class SWATWidgets {
 	 * Show the icon on the system tray notification area.
 	 */
 	public void showIcon(){
-		trayIconThread.start();
+		swtThread.start();
 	}
 	
+	/*
+	 * Remove the icon from system tray and kill the thread.
+	 */
 	public void removeIcon(){
 		display.asyncExec(new Runnable() {
 			
@@ -156,9 +159,13 @@ public class SWATWidgets {
 				try {
 					shell.dispose();
 				} catch (Exception e) {
-					// TODO: handle exception
-				}			}
-			
+					try {
+						debugPrinter.sendDebugToFile(e);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
 		});
 	}
 	/**
@@ -225,5 +232,4 @@ public class SWATWidgets {
 	public Shell getShell(){
 		return shell;
 	}
-	
 }

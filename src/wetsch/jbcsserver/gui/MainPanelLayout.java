@@ -44,42 +44,43 @@ import wetsch.jbcsserver.WirelessBarcodeScannerServer;
  */
 public abstract class MainPanelLayout extends JFrame{
 	private static final long serialVersionUID = 1L;
-	private final Rectangle screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-	private GridBagConstraints jplc = new GridBagConstraints();
+	private final Rectangle screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();//Hold the screen size.
+	private GridBagConstraints jplc = new GridBagConstraints();//Layout manager to use.
 	
-	private JPanel jpMainPanel = new JPanel(new GridBagLayout());
-	private JPanel jpServerStatus = new JPanel(new GridBagLayout());
-	private JPanel jpButtons = new JPanel(new GridBagLayout());
-	private JPanel jpResultData = new JPanel(new GridLayout(0,1));
-	private JPanel jpConnectionConfig = new JPanel(new GridBagLayout());
-	private JPanel jpStatusBar = new JPanel(new BorderLayout());
-	private JPanel jpServerConsoleButtons = new JPanel(new GridLayout(1,2));
-	private JPanel jpServerConsole = new JPanel(new GridLayout(1, 1));
+	private JPanel jpMainPanel = new JPanel(new GridBagLayout());//The main panel to hold the widgets.
+	private JPanel jpServerStatus = new JPanel(new GridBagLayout());//The panel to hold the widgets for the server status.
+	private JPanel jpButtons = new JPanel(new GridBagLayout());//The panel to hold the widget buttons.
+	private JPanel jpResultData = new JPanel(new GridLayout(0,1));//The panel that hold the table result data.
+	private JPanel jpConnectionConfig = new JPanel(new GridBagLayout());//The panel to hold the widgets that configure the server connection.
+	private JPanel jpStatusBar = new JPanel(new BorderLayout());//The panel to hold the status bar.
+	private JPanel jpServerConsoleButtons = new JPanel(new GridLayout(1,2));//the panel to hold the server console buttons.
+	private JPanel jpServerConsole = new JPanel(new GridLayout(1, 1));//The panel to hold the server console.
 	
-	protected JTextArea jtaServerConsole = null;
+	protected JTextArea jtaServerConsole = null;//The widget that store console output.
 	
-	protected JLabel lblServerAddress = new JLabel("N/A");
-	protected JLabel lblServerPort = new JLabel("N/A");
-	protected JLabel lblServerStatus = new JLabel("Not Running");
-	protected JLabel lblMessages = new JLabel("Ready");
+	protected JLabel lblServerAddress = new JLabel("N/A");//Label that holds the listening server address.
+	protected JLabel lblServerPort = new JLabel("N/A");//Label to hold the listening server port.
+	protected JLabel lblServerStatus = new JLabel("Not Running");//Label to hold the server status.
+	protected JLabel lblMessages = new JLabel("Ready");//Label that holds status-bar messages.
 	
-	private JScrollPane jspbcdPane = null;
-	private JScrollPane jspServerConsole = null;
+	private JScrollPane jspbcdPane = null;//The scroll-pane for the barcode data JTable.
+	private JScrollPane jspServerConsole = null;//The scroll-pane for the server console messages.
 	
-	protected JTable jtbcTable = new JTable();
+	protected JTable jtbcTable = new JTable();//The table to hold barcode data.
 	
-	protected JComboBox<String> jcbInterfaces = new JComboBox<String>();
+	protected JComboBox<String> jcbInterfaces = new JComboBox<String>();//Holds available listening interface IP addresses.
 
-	protected JTextField jtfPort = new JTextField("9800");
+	protected JTextField jtfPort = new JTextField("9800");//Holds the listening port for the server.  Default port is 9800.
 	
-	protected JButton btnStartStopServer = new JButton("Start server");
-	protected JButton btnCopyBarcodeToClipboard = new JButton("Copy barcode to clipboard");
-	protected JButton btnRobot = new JButton("Turn robot on");
-	protected JButton btnCloseToTray = new JButton("Minimize to tray");
-	protected JButton btnExit = new JButton("Exit");
-	protected JButton btnConsoleClear = new JButton(new ImageIcon(getClass().getResource("/console-clear-btn.png")));
-	protected JButton btnSaveConsole = new JButton(new ImageIcon(getClass().getResource("/console-save-btn.png")));
-	protected JButton btnSaveCsvFile = new JButton(new ImageIcon(getClass().getResource("/save-csv-file-btn.png")));
+	protected JButton btnStartStopServer = new JButton("Start server");//Button to start/stop the server.
+	protected JButton btnCopyBarcodeToClipboard = new JButton("Copy barcode to clipboard");//Button to copy barcode value to the clip-board.
+	protected JButton btnRobot = new JButton("Turn robot on");//Button to turn on/off robot.
+	protected JButton btnCloseToTray = new JButton("Minimize to tray");//Button to minimize to system tray.
+	protected JButton btnExit = new JButton("Exit");//Button to exit program.
+	protected JButton btnConsoleClear = new JButton(new ImageIcon(getClass().getResource("/console-clear-btn.png")));//Button to clear the console.
+	protected JButton btnSaveConsole = new JButton(new ImageIcon(getClass().getResource("/console-save-btn.png")));//Button to save console messages to file.
+	protected JButton btnSaveCsvFile = new JButton(new ImageIcon(getClass().getResource("/save-csv-file-btn.png")));//Button to save barcode table data to CSV file.
+
 	public MainPanelLayout(){
 		super("Wirless barcode Scanner Server Interface");
 		setSize(screen.width/2, screen.height/2+100);
@@ -186,6 +187,7 @@ public abstract class MainPanelLayout extends JFrame{
 		addComp(jpConnectionConfig, jtfPort, 2, 2, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, 1, 1);
 	}
 	
+	//Setup the panel for the server console.
 	private void jpServerConsoleSetup(){
 		btnSaveCsvFile.setBorderPainted(false);
 		btnSaveCsvFile.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));

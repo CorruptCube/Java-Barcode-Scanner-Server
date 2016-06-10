@@ -3,17 +3,17 @@ package wetsch.jbcsserver;
 import java.awt.event.KeyEvent;
 
 /**
- * This class is meant to be to get the key code for a given char.  
+ * This class is meant to get the key code for a given char.  
  * 
  * @author kevin
- *
+ *@version 1.0
  */
 public abstract class KeyBoard {
 
 	/**
 	 * Returns the key event for the special char that is passed in. For example, 
 	 * !, @, #, $, %, ^, &, *. (. ). ), _, +., <, >, ? <br>
-	 * If useing the robot class, you must have the robot press shift first before 
+	 * If using the robot class, you must have the robot press shift first before 
 	 * calling this method.  Do not forget to have the robot release the shift key 
 	 * at the end.
 	 * @param c The char that is associated with a key event.

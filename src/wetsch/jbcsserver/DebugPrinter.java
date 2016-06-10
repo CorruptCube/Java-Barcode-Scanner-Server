@@ -7,12 +7,18 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
+/**
+ * This class is used to write debug output to a file.  
+ * If an exception is thrown during runtime, The exceptions 
+ * can be written to a file.
+ * @author kevin
+ *@version 1.0
+ */
 public class DebugPrinter {
 	
-	private final String homeDir = System.getProperty("user.home");
-	private final File applicationDirectory = new File(homeDir + "/JBCS");
-	private final String filename;
+	private final String homeDir = System.getProperty("user.home");//Stores the path to the users home directory.
+	private final File applicationDirectory = new File(homeDir + "/JBCS");//The File that will store the debug output.
+	private final String filename;//The file name to save the debug reports.
 	
 	/**
 	 * This constructor takes a string that represents the file name 
@@ -54,7 +60,7 @@ public class DebugPrinter {
 	public String getDebugReportFilePath(){
 		return homeDir + "/" + filename;
 	}
-	//Returns the current date and time to timestam the debug output.
+	//Returns the current date and time to time-stamp the debug output.
 	private static String getCurrentDateTime(){
 		DateFormat df = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 		Calendar cal = Calendar.getInstance();

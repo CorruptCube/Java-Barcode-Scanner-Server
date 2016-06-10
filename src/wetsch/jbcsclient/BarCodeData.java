@@ -9,13 +9,14 @@ import java.io.Serializable;
 /**
  * This class holds the data collected by the JBCS-Client.
  * @author kevin
+ * @version 1.0
  *
  */
 public class BarCodeData implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
-	private String barcodeType = null;
-	private String barcodeValue = null;
+	private String barcodeType = null; //Stores the barcode type.
+	private String barcodeValue = null;//Store the barcode value.
 	
 	/**
 	 * This constructor takes two strings that set the barcode type and data.
@@ -43,5 +44,4 @@ public class BarCodeData implements Serializable{
 	public String getBarcodeValue() {
 		return barcodeValue;
 	}
-
 }

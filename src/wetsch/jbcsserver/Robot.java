@@ -13,7 +13,12 @@ import java.io.IOException;
 
 /**
  * This class extends Robot from the java.awt package.  
- * This class has a method that simulates typing on the keyboard
+ * The class will create a thread and simulate typing on the keyboard.  
+ * <br>
+ * <b>Note:</b> Make sure to have a cursor placed where you want the robot to 
+ * type, or you may experience unexpected behavior. 
+ *   
+ * <b>Note:</b> 
  * @author kevin
  *@version 1.0
  */
@@ -28,6 +33,10 @@ public class Robot extends java.awt.Robot {
 	
 	/**
 	 * The method uses a thread to type out the characters that are in the passed in string.
+	 * <br>
+	 * <b>Note:</b> Make sure to have a cursor placed where you want the robot to 
+	 * type, or you may experience unexpected behavior.
+	 * @param s The string that the robot will type.
 	 */
 	public void typeString(String s){
 		Thread thread = new Thread(new Runnable() {
