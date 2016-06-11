@@ -1,4 +1,4 @@
-package wetsch.jbcsserver;
+package wetsch.jbcsserver.server.listeners;
 
 import wetsch.jbcsclient.BarCodeData;
 
@@ -19,7 +19,7 @@ import wetsch.jbcsclient.BarCodeData;
  * @version 1.1
  *
  */
-public class BarcodeReceiverEvent {
+public class BarCoderEvent {
 	private String clientInetAddress = null;//Client devices inet address.
 	private String barcode = null;//Barcode data. 
 	private String barcodeType = null;//Barcode format type.
@@ -30,7 +30,7 @@ public class BarcodeReceiverEvent {
  * @param data Barcode data received by server.
  * @param clientInetAddress client inet address.
  */
-	public BarcodeReceiverEvent(Object source, BarCodeData data, String clientInetAddress){
+	public BarCoderEvent(Object source, BarCodeData data, String clientInetAddress){
 		this.source = source;
 		this.barcode = data.getBarcodeValue();
 		this.barcodeType = data.getBarcodeType();

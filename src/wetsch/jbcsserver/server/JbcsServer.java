@@ -1,9 +1,6 @@
-package wetsch.jbcsserver;
+package wetsch.jbcsserver.server;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -19,7 +16,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 
-import wetsch.jbcsclient.BarCodeData;
+import wetsch.jbcsserver.server.listeners.JbcsServerListener;
+import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
  * Last modified on 6/9/2016
@@ -36,14 +34,12 @@ import wetsch.jbcsclient.BarCodeData;
  * @author kevin
  * @version 2.0
  */
-public class WirelessBarcodeScannerServer extends Thread{
+public class JbcsServer extends Thread{
 	private DebugPrinter debugPrinter = null;
 	private boolean running = false;//Control the thread loop.
 	private ServerSocket server = null;//creates the server socket.
 	private Socket connection = null;//Creates the connection between server and client.
-	private BufferedReader in = null;//Out bound stream for the connection.
-	private PrintWriter out = null;//In bound stream for the connection.
-	private HashSet<BarcodeServerDataListener> listeners = null;//Hold listeners that listen for updates.
+	private HashSet<JbcsServerListener> listeners = null;//Hold listeners that listen for updates.
 	private String hostAddress = null;// Servers listening address.
 	private int port = 0;//The port number the server socket listens on.
 
@@ -53,7 +49,7 @@ public class WirelessBarcodeScannerServer extends Thread{
 	 * @param hostAddress listening interface.
 	 * @param port listening port number.
 	 */
-	public WirelessBarcodeScannerServer(String hostAddress, int port) {
+	public JbcsServer(String hostAddress, int port) {
 		debugPrinter = new DebugPrinter();
 		this.hostAddress = hostAddress;
 		this.port = port;
@@ -90,24 +86,14 @@ public class WirelessBarcodeScannerServer extends Thread{
 	public void run() {
 		try{
 			server = new ServerSocket();
-			server.bind(new InetSocketAddress(hostAddress, port));
+			server.bind(new InetSocketAddress(hostAddress, port),1);
 			running = true;
 			sendMessageToConsole("JBCS server is running");
 			while(running){
-				if(connection == null){
-					ListenForConnections();
-					sendMessageToConsole("Device connected with IP Address " + connection.getInetAddress().toString());
-				}else{
-					setupStreams();
-					handelData();
-				}
+				ListenForConnections();
 			}
 		}catch(Exception e){
-			try {
-				debugPrinter.sendDebugToFile(e);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			debugPrinter.sendDebugToFile(e);
 			e.printStackTrace();
 		}
 		super.run();
@@ -154,9 +140,9 @@ public class WirelessBarcodeScannerServer extends Thread{
 	 * Add a data revived listener to the object.
 	 * @param listener
 	 */
-	public void addServerDatareceivedListener(BarcodeServerDataListener listener){
+	public void addServerDatareceivedListener(JbcsServerListener listener){
 		if(listeners == null)
-			listeners = new HashSet<BarcodeServerDataListener>();
+			listeners = new HashSet<JbcsServerListener>();
 		if(!listeners.contains(listener))
 			listeners.add(listener);
 	}
@@ -166,7 +152,7 @@ public class WirelessBarcodeScannerServer extends Thread{
 	 * Removes the listener from the object.
 	 * @param listener
 	 */
-	public void removeServerDatareceivedListener(BarcodeServerDataListener listener){
+	public void removeServerDatareceivedListener(JbcsServerListener listener){
 		if(listeners.contains(listener))
 			listeners.remove(listener);
 		if(listeners.size() == 0)
@@ -185,68 +171,11 @@ public class WirelessBarcodeScannerServer extends Thread{
 	private void ListenForConnections() throws IOException{
 		if(connection == null && running){
 			connection = server.accept();
+			sendMessageToConsole("Device connected with IP Address " + connection.getInetAddress().toString());
+			ClientConnection client = new ClientConnection(connection, listeners);
+			client.start();
+			connection = null;
 		}
-	}
-	
-	//Set up the streams used for the socket connection.
-	private void setupStreams() throws IOException{
-		if(connection != null){
-			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			out = new PrintWriter(connection.getOutputStream());
-		}
-	}
-	
-	/*
-	 * Handles the data received by connected client devices.
-	 * Commands passed:
-	 * SEND_BARCODE_DATA:
-	 * The first value is the barcode type.
-	 * The second value is the value stored in the barcode.
-	 * CHECK_CONNECTION:
-	 * If the command is received, the server will responds
-	 * back with a message indicating that the connection is okay.
-	 * Any unrecognized commands will send a message back to the client
-	 * the server responded with invalid command.
-	 * Once the server finishes, it will close the current connection.
-	 */
-	private void handelData() throws ClassNotFoundException, IOException{
-		String clientInetAddress = connection.getInetAddress().toString();
-		String message = in.readLine();
-
-		switch (message) {
-			case "SEND_BARCODE_DATA":
-				String bType = in.readLine();
-				String bData =in.readLine();
-				out.println("Data received by server.");
-				out.flush();
-				BarCodeData data = new BarCodeData(bType, bData);
-				for(BarcodeServerDataListener l : listeners)
-					l.barcodeServerDatareceived(new BarcodeReceiverEvent(this, data, clientInetAddress));
-				sendMessageToConsole("Data received from client with address " + clientInetAddress);
-				break;
-			case "CHECK_CONNECTION":
-				out.println("Connection to server is ok.");
-				out.flush();
-				sendMessageToConsole("Connection check from client with address " + clientInetAddress);
-				break;
-			default:
-				out.println("Server responded with invalid command");
-				out.flush();
-				sendMessageToConsole("Invalid message from client with address " + clientInetAddress);
-				break;
-			}
-		closeConnection();
-	}
-	
-		
-	//Closes the streams and connection.
-	private void closeConnection() throws IOException{
-		in.close();
-		in = null;
-		out.close();
-		out = null;
-		connection.close();
-		connection = null;
 	}
 	
 	/*
@@ -255,7 +184,7 @@ public class WirelessBarcodeScannerServer extends Thread{
 	 */
 	private void sendMessageToConsole(String message){
 		if(listeners != null){
-		for(BarcodeServerDataListener l : listeners)
+		for(JbcsServerListener l : listeners)
 			l.barcodeServerConsole(getDateTime() +": " + message);
 		}
 	}

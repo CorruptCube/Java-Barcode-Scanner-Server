@@ -1,4 +1,4 @@
-package wetsch.jbcsserver;
+package wetsch.jbcsserver.tools;
 
 import java.io.File;
 import java.io.FileWriter;

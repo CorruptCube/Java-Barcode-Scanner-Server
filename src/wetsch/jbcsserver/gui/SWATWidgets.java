@@ -1,7 +1,5 @@
 package wetsch.jbcsserver.gui;
 
-import java.io.IOException;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
@@ -15,7 +13,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tray;
 import org.eclipse.swt.widgets.TrayItem;
 
-import wetsch.jbcsserver.DebugPrinter;
+import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
  * Last modified 2/8/2016
@@ -72,15 +70,10 @@ public class SWATWidgets {
 					display.dispose();
 	
 				}catch(Exception e){
-					try {
 						debugPrinter.sendDebugToFile(e);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-					e.printStackTrace();
+						e.printStackTrace();
 				}
 			}
-			
 		});
 	}
 	
@@ -93,7 +86,7 @@ public class SWATWidgets {
 		itemShowHideInterface.setText("Show interface");
 		itemStartServer = new MenuItem(menu, SWT.PUSH);
 		itemStartServer.setText("Start Server");
-		itemStartStopRobot = new MenuItem(menu, SWT.POP_UP);
+		itemStartStopRobot = new MenuItem(menu, SWT.PUSH);
 		itemStartStopRobot.setText("Turn robot on");
 		itemExit = new MenuItem(menu, SWT.PUSH);
 		itemExit.setText("Exit");
@@ -133,11 +126,7 @@ public class SWATWidgets {
 				try{
 					item.setText(labelText);
 				}catch(Exception e){
-					try {
-						debugPrinter.sendDebugToFile(e);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
+					debugPrinter.sendDebugToFile(e);
 					e.printStackTrace();
 				}
 			}
@@ -162,11 +151,8 @@ public class SWATWidgets {
 				try {
 					shell.dispose();
 				} catch (Exception e) {
-					try {
-						debugPrinter.sendDebugToFile(e);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
+					debugPrinter.sendDebugToFile(e);
+					e.printStackTrace();
 				}
 			}
 		});

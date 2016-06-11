@@ -8,7 +8,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
-import java.io.IOException;
 import java.net.SocketException;
 
 import javax.swing.BorderFactory;
@@ -28,8 +27,8 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import wetsch.jbcsserver.DebugPrinter;
-import wetsch.jbcsserver.WirelessBarcodeScannerServer;
+import wetsch.jbcsserver.server.JbcsServer;
+import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
  * Last modified on 2/8/2016
@@ -217,18 +216,13 @@ public abstract class MainPanelLayout extends JFrame{
 	//Populating the combo box that holds the available IPV4 addresses on the system.
 	private void populatejcbInterfaces(){
 		try {
-			if(WirelessBarcodeScannerServer.getAvailableIPV4Addresses().length > 0)
-				jcbInterfaces.setModel(new DefaultComboBoxModel<String>(WirelessBarcodeScannerServer.getAvailableIPV4Addresses()));
+			if(JbcsServer.getAvailableIPV4Addresses().length > 0)
+				jcbInterfaces.setModel(new DefaultComboBoxModel<String>(JbcsServer.getAvailableIPV4Addresses()));
 		} catch (SocketException e) {
-			try {
-				DebugPrinter printer = new DebugPrinter();
-				printer.sendDebugToFile(e);
-			} catch (IOException e1) {
-				JOptionPane.showMessageDialog(this, e1.getMessage());
-				e1.printStackTrace();
-			}
+			DebugPrinter printer = new DebugPrinter();
+			printer.sendDebugToFile(e);
 			JOptionPane.showMessageDialog(this, e.getMessage());
-			e.printStackTrace();
+			
 		}
 	}
 	

@@ -1,4 +1,4 @@
-package wetsch.jbcsserver;
+package wetsch.jbcsserver.tools;
 
 import java.awt.event.KeyEvent;
 

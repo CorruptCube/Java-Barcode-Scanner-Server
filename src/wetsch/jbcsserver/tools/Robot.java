@@ -1,8 +1,7 @@
-package wetsch.jbcsserver;
+package wetsch.jbcsserver.tools;
 
 import java.awt.AWTException;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 
 /*
  * Last modified: 9/27.2015
@@ -61,12 +60,8 @@ public class Robot extends java.awt.Robot {
 						}
 					}
 				}catch(Exception e){
-					try {
-						debugPrinter.sendDebugToFile(e);
-						e.printStackTrace();
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
+					debugPrinter.sendDebugToFile(e);
+					e.printStackTrace();
 				}
 			}
 		});

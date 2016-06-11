@@ -1,4 +1,4 @@
-package wetsch.jbcsserver;
+package wetsch.jbcsserver.tools;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -39,19 +39,23 @@ public class DebugPrinter {
 	 * @param e Exception to be written to file.
 	 * @throws IOException
 	 */
-	public void sendDebugToFile(Exception e) throws IOException{
-		File report = new File(applicationDirectory+"/"+filename);
-		if(!applicationDirectory.exists())
-			applicationDirectory.mkdirs();
-		 if(!report.exists())
-			report.createNewFile();
-		FileWriter fw = new FileWriter(report, true);
-		PrintWriter pw = new PrintWriter(fw);
-		pw.println(getCurrentDateTime());
-		e.printStackTrace(pw);
-		pw.flush();
-		pw.close();
-		fw.close();
+	public void sendDebugToFile(Exception e){
+		try {
+			File report = new File(applicationDirectory+"/"+filename);
+			if(!applicationDirectory.exists())
+				applicationDirectory.mkdirs();
+			if(!report.exists())
+				report.createNewFile();
+			FileWriter fw = new FileWriter(report, true);
+			PrintWriter pw = new PrintWriter(fw);
+			pw.println(getCurrentDateTime());
+			e.printStackTrace(pw);
+			pw.flush();
+			pw.close();
+			fw.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 	/**
 	 * Returns the absolute path to the debug output file.
