@@ -20,9 +20,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 
 import wetsch.jbcsserver.BarcodeReceiverEvent;
@@ -108,6 +106,34 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 		}
 	}
 	
+	/*
+	 * This method opens a file dialog to save a file.
+	 * If swtWidgets is not equal to null, the SWT
+	 * file dialog widget is used.
+	 * Otherwise, JFileChooser is used to get the file path. 
+	 */
+	private String getFileDialog(){
+		try{
+			if(swtWidgets != null){
+				return swtWidgets.getSWTFileDialog();
+			}else{
+				JFileChooser fc = new JFileChooser();
+				fc.setDialogTitle("Save file to?");
+				int selection = fc.showSaveDialog(this);
+				if(selection != JFileChooser.APPROVE_OPTION)
+					return null;
+				return fc.getSelectedFile().getAbsolutePath();
+			}
+
+		}catch(Exception e){
+			try {
+				debugPrinter.sendDebugToFile(e);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+		return null;
+	}
 	
 	/*
 	 * If server is not = to null, shut down the server thread.
@@ -134,7 +160,7 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 			}
 	}
 	
-	
+	//Get the data from the JTable holding the barcode data.
 	private String[][] getBarcodeTableData(){
 		if(jtbcTable.getRowCount() == 0)
 			return null;
@@ -253,125 +279,49 @@ public class MainPanel  extends MainPanelLayout implements BarcodeServerDataList
 	
 	/*
 	 * Listener method for save console to file button.
-	 * This method uses SWT libraries to to handle the file dialog for Linux.
-	 * The JVM would crash in Linux using the JFileChooser because of the
-	 * system tray icon loaded by SWT.
-	 * The method checks if the OS is Linux
-	 * so it can determine if it should use JFileChooser or SWT FileDialog.
 	 */
 	private void saveConsoleToFile(){
-		String dialogTitle = "Save console output.";
-		if(swtWidgets != null){
-			swtWidgets.getDisplay().asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					try{
-						FileDialog fd = new FileDialog(swtWidgets.getShell(), SWT.SAVE);
-						fd.setText(dialogTitle);
-						fd.open();
-						if(fd.getFileName().equals("Untitled"))
-							return;
-						File f = new File(fd.getFilterPath() + "/" + fd.getFileName());
-						if(!f.exists())
-							f.createNewFile();
-						FileWriter fw = new FileWriter(f, true);
-						fw.write(jtaServerConsole.getText().toString());
-						fw.close();
-						lblMessages.setText("File saved successfully to " + f.getAbsolutePath());
-					}catch(Exception e){
-						try {
-							debugPrinter.sendDebugToFile(e);
-							swtWidgets.showMessageBoxError(e.getMessage());
-						} catch (IOException e1) {
-							e1.printStackTrace();
-							swtWidgets.showMessageBoxError(e1.getMessage());
-						}
-					}
-				}
-			});
-		}else{
-			try{
-				File f = null;
-				JFileChooser fc = new JFileChooser();
-				fc.setDialogTitle(dialogTitle);
-				int selection = fc.showSaveDialog(this);
-				if(selection != JFileChooser.APPROVE_OPTION)
-					return;
-				f = new File(fc.getSelectedFile().getAbsolutePath());
-				if(!f.exists())
-					f.createNewFile();
-				FileWriter fw = new FileWriter(f,true);
-				fw.write(jtaServerConsole.getText().toString());
-				fw.close();
-				lblMessages.setText("File saved successfully to " + f.getAbsolutePath());
-			}catch(Exception e){
-				try {
-					debugPrinter.sendDebugToFile(e);
-					JOptionPane.showMessageDialog(this, e.getMessage());
-				} catch (IOException e1) {
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(this, e1.getMessage());
-				}
+		String fileName = 	getFileDialog();
+		if(fileName == null)
+			return;
+		try{
+			File f = new File(fileName);
+			if(!f.exists())
+				f.createNewFile();
+			FileWriter fw = new FileWriter(f);
+			fw.write(jtaServerConsole.getText().toString());
+			fw.close();
+			lblMessages.setText("File saved successfully to " + fileName);
+		}catch(Exception e){
+			try {
+				debugPrinter.sendDebugToFile(e);
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
+			JOptionPane.showMessageDialog(this, e.getMessage());
 		}
 	}
 	
 	/*Listener method for saving bar-code table data to CSV file.
-	 * This method uses SWT libraries to to handle the file dialog for Linux.
-	 * The JVM would crash in Linux using the JFileChooser because of the
-	 * system tray icon loaded by SWT.
-	 * The method checks if the OS is Linux
-	 * so it can determine if it should use JFileChooser or SWT FileDialog.
 	 */
 	private void saveBarcodeDataTableAsCsvFile(){
-		String dialogTitle = "Save table data output.";
-		if(jtbcTable.getRowCount() == 0){
-			JOptionPane.showMessageDialog(this, "There are no records in the table.");
+		String fileName = getFileDialog();
+		if(fileName == null)
 			return;
-		}
-		if(swtWidgets != null){
-			swtWidgets.getDisplay().asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					try{
-						FileDialog fd = new FileDialog(swtWidgets.getShell(), SWT.SAVE);
-						fd.setText(dialogTitle);
-						fd.open();
-						if(fd.getFileName().equals("Untitled"))
-							return;
-						CsvFileWritter cfw = new CsvFileWritter(getBarcodeTableData(), "|");
-						cfw.writeCsvFile(fd.getFilterPath() + "/" + fd.getFileName());
-						lblMessages.setText("File saved successfully to " + fd.getFilterPath() + "/" + fd.getFileName());
-					}catch(Exception e){
-						try {
-							debugPrinter.sendDebugToFile(e);
-							swtWidgets.showMessageBoxError(e.getMessage());
-						} catch (IOException e1) {
-							e1.printStackTrace();
-							swtWidgets.showMessageBoxError(e1.getMessage());
-						}
-					}
-				}
-			});
-		}else{
-			try{
-				JFileChooser fc = new JFileChooser();
-				fc.setDialogTitle(dialogTitle);
-				int selection = fc.showSaveDialog(this);
-				if(selection != JFileChooser.APPROVE_OPTION)
-					return;
-				CsvFileWritter cfw = new CsvFileWritter(getBarcodeTableData(), "|");
-				cfw.writeCsvFile(fc.getSelectedFile().getAbsolutePath());
-				lblMessages.setText("File saved successfully to " + fc.getSelectedFile().getAbsolutePath());
-			}catch(Exception e){
-				try {
-					debugPrinter.sendDebugToFile(e);
-					JOptionPane.showMessageDialog(this, e.getMessage());
-				} catch (IOException e1) {
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(this, e1.getMessage());
-				}
+		try{
+			CsvFileWritter cfw = new CsvFileWritter(getBarcodeTableData(), "|");
+			cfw.writeCsvFile(fileName);
+			lblMessages.setText("File saved successfully to " + fileName);
+		}catch(Exception e){
+			try {
+				debugPrinter.sendDebugToFile(e);
+				JOptionPane.showMessageDialog(this, e.getMessage());
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				JOptionPane.showMessageDialog(this, e1.getMessage());
 			}
+			JOptionPane.showMessageDialog(this, e.getMessage());
+
 		}
 	}
 	

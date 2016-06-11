@@ -6,6 +6,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -29,6 +30,8 @@ import wetsch.jbcsserver.DebugPrinter;
  *@version 1.0
  */
 public class SWATWidgets {
+	private String disposableString;//Disposable string
+
 	private DebugPrinter debugPrinter = null;//Debug printer object.
 	private Thread swtThread = null;//Thread for SWT widgets.
 	private Listener listener = null;//Listener for the menu items.
@@ -223,6 +226,45 @@ public class SWATWidgets {
 	 */
 	public Display getDisplay(){
 		return display;
+	}
+	
+	/**
+	 * This method opens a SWT widget file dialog.  
+	 * Once a file has been chosen, a string containing 
+	 * the absolute path is returned.
+	 * <br>
+	 * <b>Note:</b> This method runs on the SWT display thread.  
+	 * Once the runnable is exacted, Wait() is called to lock 
+	 * the thread that called it.  Once the dialog has been 
+	 * closed, notify() is called and control of the lock is 
+	 * handed back to the calling thread.
+	 * @return String
+	 * @throws InterruptedException
+	 */
+	public String getSWTFileDialog() throws InterruptedException{
+		Object lock = new Object();
+		disposableString = null;
+		
+		synchronized (lock) {
+			display.asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					synchronized (lock) {
+						FileDialog fd = new FileDialog(shell, SWT.SAVE);
+						fd.setText("Save file to?");
+						fd.open();
+						if(fd.getFileName().equals("Untitled")){
+							lock.notify();
+							return;
+						}
+						disposableString = fd.getFilterPath()  + "/" + fd.getFileName();
+						lock.notify();
+					}
+				}
+			});
+				lock.wait();
+		}
+		return disposableString;
 	}
 	
 	/**
