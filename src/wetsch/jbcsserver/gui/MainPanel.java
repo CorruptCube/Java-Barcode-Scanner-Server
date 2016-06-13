@@ -44,14 +44,12 @@ import wetsch.jbcsserver.tools.Robot;
 public class MainPanel  extends MainPanelLayout implements JbcsServerListener, ActionListener, Listener{
 	private static final long serialVersionUID = 1L;
 
-	private DebugPrinter debugPrinter = null;//Object to write debug output to file.
 	private boolean useRobot = false;//Determine if robot is on/off.
 	private JbcsServer server = null;//Barcode scanner server object.
 	private SWATWidgets swtWidgets = null;//SWT widgets object.
 	private SystemTrayIcon trayIcon = null;//Windows system tray icon
 	
 	public MainPanel() {
-		debugPrinter = new DebugPrinter();
 		setupActionListeners();
 		if(SystemTray.isSupported() && !System.getProperty("os.name").equals("Linux")){
 			setupSystemTrayIcon();
@@ -101,7 +99,7 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 			Image img = Toolkit.getDefaultToolkit().getImage(url);
 			trayIcon = new SystemTrayIcon(img, new TrayIconActionListener());
 		} catch (AWTException e) {
-			debugPrinter.sendDebugToFile(e);
+			new DebugPrinter().sendDebugToFile(e);
 			JOptionPane.showMessageDialog(this, e.getMessage());
 		}
 	}
@@ -126,7 +124,7 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 			}
 
 		}catch(Exception e){
-			debugPrinter.sendDebugToFile(e);
+			new DebugPrinter().sendDebugToFile(e);
 		}
 		return null;
 	}
@@ -145,7 +143,7 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 				lblMessages.setText("Server shutdown successfuly.");
 			}
 			}catch (InterruptedException | IOException e) {
-				debugPrinter.sendDebugToFile(e);
+				new DebugPrinter().sendDebugToFile(e);
 				JOptionPane.showMessageDialog(this, e.getMessage());
 			}
 	}
@@ -283,7 +281,7 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 			fw.close();
 			lblMessages.setText("File saved successfully to " + fileName);
 		}catch(Exception e){
-			debugPrinter.sendDebugToFile(e);
+			new DebugPrinter().sendDebugToFile(e);
 			lblMessages.setText("Failed to write file " + fileName + ".");
 			JOptionPane.showMessageDialog(this, e.getMessage());
 		}
@@ -305,7 +303,7 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 			cfw.writeCsvFile(fileName);
 			lblMessages.setText("File saved successfully to " + fileName);
 		}catch(Exception e){
-			debugPrinter.sendDebugToFile(e);
+			new DebugPrinter().sendDebugToFile(e);
 			lblMessages.setText("Failed to write file " + fileName + ".");
 			JOptionPane.showMessageDialog(this, e.getMessage());
 		}
@@ -354,8 +352,8 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 		Calendar cal = Calendar.getInstance();
 		lblMessages.setText("Last barcode received from " + e.getClientInetAddress()+ " at " + df.format(cal.getTime()) + ".");
 		}catch(Exception ex){
-				debugPrinter.sendDebugToFile(ex);
-				JOptionPane.showMessageDialog(this, ex.getMessage());
+			new DebugPrinter().sendDebugToFile(ex);
+			JOptionPane.showMessageDialog(this, ex.getMessage());
 		}
 	}
 	

@@ -35,7 +35,6 @@ import wetsch.jbcsserver.tools.DebugPrinter;
  * @version 2.0
  */
 public class JbcsServer extends Thread{
-	private DebugPrinter debugPrinter = null;
 	private boolean running = false;//Control the thread loop.
 	private ServerSocket server = null;//creates the server socket.
 	private Socket connection = null;//Creates the connection between server and client.
@@ -50,7 +49,6 @@ public class JbcsServer extends Thread{
 	 * @param port listening port number.
 	 */
 	public JbcsServer(String hostAddress, int port) {
-		debugPrinter = new DebugPrinter();
 		this.hostAddress = hostAddress;
 		this.port = port;
 	}
@@ -93,7 +91,7 @@ public class JbcsServer extends Thread{
 				ListenForConnections();
 			}
 		}catch(Exception e){
-			debugPrinter.sendDebugToFile(e);
+			new DebugPrinter().sendDebugToFile(e);
 			e.printStackTrace();
 		}
 		super.run();

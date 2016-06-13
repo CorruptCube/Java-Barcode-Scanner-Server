@@ -30,7 +30,6 @@ import wetsch.jbcsserver.tools.DebugPrinter;
 public class SWATWidgets {
 	private String disposableString;//Disposable string
 
-	private DebugPrinter debugPrinter = null;//Debug printer object.
 	private Thread swtThread = null;//Thread for SWT widgets.
 	private Listener listener = null;//Listener for the menu items.
 	private Menu menu;//System tray incon menu.
@@ -48,7 +47,6 @@ public class SWATWidgets {
 	 */
 	public SWATWidgets(Listener listener) {
 		this.listener = listener;
-		debugPrinter = new DebugPrinter();
 		setupThread();
 	}
 	
@@ -70,8 +68,8 @@ public class SWATWidgets {
 					display.dispose();
 	
 				}catch(Exception e){
-						debugPrinter.sendDebugToFile(e);
-						e.printStackTrace();
+					new DebugPrinter().sendDebugToFile(e);
+					e.printStackTrace();
 				}
 			}
 		});
@@ -126,7 +124,7 @@ public class SWATWidgets {
 				try{
 					item.setText(labelText);
 				}catch(Exception e){
-					debugPrinter.sendDebugToFile(e);
+					new DebugPrinter().sendDebugToFile(e);
 					e.printStackTrace();
 				}
 			}
@@ -151,7 +149,7 @@ public class SWATWidgets {
 				try {
 					shell.dispose();
 				} catch (Exception e) {
-					debugPrinter.sendDebugToFile(e);
+					new DebugPrinter().sendDebugToFile(e);
 					e.printStackTrace();
 				}
 			}

@@ -27,7 +27,6 @@ import wetsch.jbcsserver.tools.DebugPrinter;
  * @version 1.0
  */
 public class ClientConnection extends Thread {
-	private DebugPrinter debugPrinter = new DebugPrinter();//Send the java stack-trace to a file.
 	private HashSet<JbcsServerListener> listeners = null;//Hold listeners that listen for updates.
 
 	private Socket connection = null;//The connection to the client.
@@ -58,13 +57,13 @@ public class ClientConnection extends Thread {
 		}catch(Exception e){
 			if(e instanceof SocketTimeoutException)
 				sendMessageToConsole("Connection timed out for client with IP address " + connection.getInetAddress());
-			debugPrinter.sendDebugToFile(e);
+			new DebugPrinter().sendDebugToFile(e);
 			e.printStackTrace();
 		}finally{
 			try {
 				closeConnection();
 			} catch (IOException e) {
-				debugPrinter.sendDebugToFile(e);
+				new DebugPrinter().sendDebugToFile(e);
 				e.printStackTrace();
 			}
 		}

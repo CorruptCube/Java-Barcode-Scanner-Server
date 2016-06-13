@@ -4,7 +4,7 @@ import java.awt.AWTException;
 import java.awt.event.KeyEvent;
 
 /*
- * Last modified: 9/27.2015
+ * Last modified: 6/12.2016
  * Changes:
  * Fixed bug that prevented typing of alpha characters and most commonly used special characters.
  * Added support to print stack-trace to debug output file.
@@ -23,10 +23,8 @@ import java.awt.event.KeyEvent;
  */
 public class Robot extends java.awt.Robot {
 	private char[] specialCharacters = null;// special characters that need shift key.
-	private DebugPrinter debugPrinter = null;// print the debug output to a file.
 	public Robot() throws AWTException {
 		super();
-		debugPrinter = new DebugPrinter();
 		specialCharacters = new char[]{'!', '@', '#', '$', '^', '%', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', '<', '>', '?'};
 	}
 	
@@ -60,7 +58,7 @@ public class Robot extends java.awt.Robot {
 						}
 					}
 				}catch(Exception e){
-					debugPrinter.sendDebugToFile(e);
+					new DebugPrinter().sendDebugToFile(e);
 					e.printStackTrace();
 				}
 			}

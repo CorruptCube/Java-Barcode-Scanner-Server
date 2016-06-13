@@ -219,8 +219,7 @@ public abstract class MainPanelLayout extends JFrame{
 			if(JbcsServer.getAvailableIPV4Addresses().length > 0)
 				jcbInterfaces.setModel(new DefaultComboBoxModel<String>(JbcsServer.getAvailableIPV4Addresses()));
 		} catch (SocketException e) {
-			DebugPrinter printer = new DebugPrinter();
-			printer.sendDebugToFile(e);
+			new DebugPrinter().sendDebugToFile(e);
 			JOptionPane.showMessageDialog(this, e.getMessage());
 			
 		}

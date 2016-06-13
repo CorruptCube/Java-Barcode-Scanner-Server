@@ -7,18 +7,29 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+/*
+ * Last modified 612/2016
+ * Changes:
+ * Extended Thread.
+ */
+
 /**
+ * This class extends Thread.  
  * This class is used to write debug output to a file.  
  * If an exception is thrown during runtime, The exceptions 
- * can be written to a file.
+ * can be written to a file.  
+ * There is no need to call the start() method sence it is 
+ * called by the sendDebugToFile() method.
  * @author kevin
  *@version 1.0
  */
-public class DebugPrinter {
+public class DebugPrinter extends Thread{
 	
 	private final String homeDir = System.getProperty("user.home");//Stores the path to the users home directory.
 	private final File applicationDirectory = new File(homeDir + "/JBCS");//The File that will store the debug output.
 	private final String filename;//The file name to save the debug reports.
+	private Exception e = null;//the exception to be written.
 	
 	/**
 	 * This constructor takes a string that represents the file name 
@@ -30,16 +41,16 @@ public class DebugPrinter {
 		this.filename  = "JBCS-server-debug-report.txt";
 	}
 	
-	/**
-	 * This method writs the passed in exception to file.  
-	 * The file is saved in the current user's home directory.
-	 * If the file does not exist, it is created automatically.
-	 * Each method call appends to the end of the file with a 
-	 * time stamp and the exception that was passed in.
-	 * @param e Exception to be written to file.
-	 * @throws IOException
+	
+	/*
+	 * This method is the method the thread will exacute at the start of the thread.
+	 * The method will take the exception and write it to a text file.
+	 * The method also appends to tehe bottom of the file keeping prevous exceptions in place.
+	 * (non-Javadoc)
+	 * @see java.lang.Thread#run()
 	 */
-	public void sendDebugToFile(Exception e){
+	@Override
+	public void run() {
 		try {
 			File report = new File(applicationDirectory+"/"+filename);
 			if(!applicationDirectory.exists())
@@ -56,6 +67,18 @@ public class DebugPrinter {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		super.run();
+	}
+
+
+
+	/**
+	 * This method sets the Exception to write to a file.
+	 * @param e Exception to write.
+	 */
+	public void sendDebugToFile(Exception e){
+		this.e = e;
+		start();
 	}
 	/**
 	 * Returns the absolute path to the debug output file.
