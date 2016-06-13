@@ -31,8 +31,9 @@ import wetsch.jbcsserver.tools.DebugPrinter;
 import wetsch.jbcsserver.tools.Robot;
 
 /*
-** Last modified on 2/22/2016
- * Added some debugging lines.
+** Last modified on 6/12/2016
+ * Cleaned up code for debug printer.
+ * Removed dulplkit message dialog in catch blck for save csv button handler. 
  */
 
 /**
@@ -42,20 +43,25 @@ import wetsch.jbcsserver.tools.Robot;
  */
 public class MainPanel  extends MainPanelLayout implements JbcsServerListener, ActionListener, Listener{
 	private static final long serialVersionUID = 1L;
+
 	private DebugPrinter debugPrinter = null;//Object to write debug output to file.
-	private boolean useRowbot = false;//Determine if to use robot.
+	private boolean useRobot = false;//Determine if robot is on/off.
 	private JbcsServer server = null;//Barcode scanner server object.
 	private SWATWidgets swtWidgets = null;//SWT widgets object.
 	private SystemTrayIcon trayIcon = null;//Windows system tray icon
 	
 	public MainPanel() {
 		debugPrinter = new DebugPrinter();
+		setupActionListeners();
 		if(SystemTray.isSupported() && !System.getProperty("os.name").equals("Linux")){
 			setupSystemTrayIcon();
 		}else
+			/*
+			* Due to nome shell 3, SWT libs are used for the system trat icon.
+			* When testing this on java 1.9, it loooks as though the awt API may have been fixed.
+			* Until this is confirmed, the SWT libs will be used in linux.
+			*/
 			setupSWATWidgets();
-		setupActionListeners();
-		
 	}
 	
 	//Set up listeners.
@@ -208,15 +214,15 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 	
 	//Listener method for the btnRobot button.
 	private void btnRobotListener(){
-		if(useRowbot){
-			useRowbot = false;
+		if(useRobot){
+			useRobot = false;
 			btnRobot.setText("Turn robot on");
 			if(trayIcon != null)
 				trayIcon.getMenuItemStartStopRobot().setLabel("Turn robot on");
 			else if(swtWidgets != null)
 				swtWidgets.changeMenuItemLabel("Turn robot on", swtWidgets.getItemStartStopRobot());
 		}else{
-			useRowbot = true;
+			useRobot = true;
 			btnRobot.setText("Turn robot off");
 			if(trayIcon != null)
 				trayIcon.getMenuItemStartStopRobot().setLabel("Turn robot off");
@@ -278,6 +284,7 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 			lblMessages.setText("File saved successfully to " + fileName);
 		}catch(Exception e){
 			debugPrinter.sendDebugToFile(e);
+			lblMessages.setText("Failed to write file " + fileName + ".");
 			JOptionPane.showMessageDialog(this, e.getMessage());
 		}
 	}
@@ -285,16 +292,21 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 	/*Listener method for saving bar-code table data to CSV file.
 	 */
 	private void saveBarcodeDataTableAsCsvFile(){
-		String fileName = getFileDialog();
+		if(jtbcTable.getRowCount() == 0){
+			JOptionPane.showMessageDialog(this, "There is no barcode data to write.");
+			return;
+		}
+			String fileName = getFileDialog();
 		if(fileName == null)
 			return;
+		
 		try{
 			CsvFileWritter cfw = new CsvFileWritter(getBarcodeTableData(), "|");
 			cfw.writeCsvFile(fileName);
 			lblMessages.setText("File saved successfully to " + fileName);
 		}catch(Exception e){
 			debugPrinter.sendDebugToFile(e);
-			JOptionPane.showMessageDialog(this, e.getMessage());
+			lblMessages.setText("Failed to write file " + fileName + ".");
 			JOptionPane.showMessageDialog(this, e.getMessage());
 		}
 	}
@@ -334,7 +346,7 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 		 * This is what allows the barcode to be
 		 * inputed outside the program.
 		 */
-		if(useRowbot){
+		if(useRobot){
 			Robot robot = new Robot();
 			robot.typeString(e.getBarcode());
 		}

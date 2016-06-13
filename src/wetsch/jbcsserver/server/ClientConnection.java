@@ -16,6 +16,10 @@ import wetsch.jbcsserver.server.listeners.BarCoderEvent;
 import wetsch.jbcsserver.server.listeners.JbcsServerListener;
 import wetsch.jbcsserver.tools.DebugPrinter;
 
+/*
+ * Last modified: 6/11/2016
+ */
+
 /**
  * This clas extends Thread.  It is responsible for handling connections accepted 
  * by the server.

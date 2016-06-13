@@ -118,7 +118,7 @@ public class SWATWidgets {
 	 * @param labelText New menu item text
 	 * @param item Menu item widget
 	 */
-	public void changeMenuItemLabel(String labelText, MenuItem item){
+	public void changeMenuItemLabel(final String labelText, final MenuItem item){
 		display.asyncExec(new Runnable() {
 			
 			@Override
@@ -185,7 +185,7 @@ public class SWATWidgets {
 	 * Shows an error message dialog.
 	 * @param message Message text.
 	 */
-	public void showMessageBoxError(String message){
+	public void SWTShowMessageBoxError(final String message){
 		display.asyncExec(new Runnable() {
 			
 			@Override
@@ -228,7 +228,7 @@ public class SWATWidgets {
 	 * @throws InterruptedException
 	 */
 	public String getSWTFileDialog() throws InterruptedException{
-		Object lock = new Object();
+		final Object lock = new Object();
 		disposableString = null;
 		
 		synchronized (lock) {

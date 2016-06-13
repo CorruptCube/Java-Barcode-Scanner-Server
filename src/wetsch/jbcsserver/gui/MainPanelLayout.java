@@ -31,9 +31,9 @@ import wetsch.jbcsserver.server.JbcsServer;
 import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
- * Last modified on 2/8/2016
+ * Last modified on 6/11/2016
  * Changes:
- * Added button to save barcode data table to a CSV file.
+ * cleaned up code added documentation.
  */
 
 /**
@@ -81,7 +81,7 @@ public abstract class MainPanelLayout extends JFrame{
 	protected JButton btnSaveCsvFile = new JButton(new ImageIcon(getClass().getResource("/save-csv-file-btn.png")));//Button to save barcode table data to CSV file.
 
 	public MainPanelLayout(){
-		super("Wirless barcode Scanner Server Interface");
+		super("JBCS Server Interface");
 		setSize(screen.width/2, screen.height/2+100);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);

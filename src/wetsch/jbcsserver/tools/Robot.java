@@ -37,7 +37,7 @@ public class Robot extends java.awt.Robot {
 	 * type, or you may experience unexpected behavior.
 	 * @param s The string that the robot will type.
 	 */
-	public void typeString(String s){
+	public void typeString(final String s){
 		Thread thread = new Thread(new Runnable() {
 			
 			@Override

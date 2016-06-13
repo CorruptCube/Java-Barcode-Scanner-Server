@@ -20,9 +20,9 @@ import wetsch.jbcsserver.server.listeners.JbcsServerListener;
 import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
- * Last modified on 6/9/2016
+ * Last modified on 6/11/2016
  * Changes:
- *Fixed input/output streams so as to prevent telnet connections from crashing the server.
+ *Created thread for each accepted connection.
  */
 /**
  * This class extends Thread.  It uses this thread to listen for incoming connections from the Wireless barcode scanner Android app. 
