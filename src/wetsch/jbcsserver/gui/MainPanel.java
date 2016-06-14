@@ -31,9 +31,8 @@ import wetsch.jbcsserver.tools.DebugPrinter;
 import wetsch.jbcsserver.tools.Robot;
 
 /*
-** Last modified on 6/12/2016
- * Cleaned up code for debug printer.
- * Removed dulplkit message dialog in catch blck for save csv button handler. 
+** Last modified on 6/14/2016
+ * Added warning message dialog for listening on the loopback address.
  */
 
 /**
@@ -140,7 +139,6 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 				server.shutDownServer();
 				server.join();
 				server = null;
-				lblMessages.setText("Server shutdown successfuly.");
 			}
 			}catch (InterruptedException | IOException e) {
 				new DebugPrinter().sendDebugToFile(e);
@@ -164,15 +162,20 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 	}
 	
 	/*
-	 * Listener method for start server button.
+	 * Listener method for start/stop server button.
 	 * if the server thread is equal to null,
 	 * a new thread is created and the server is started.
+	 * Otherwise, the server is stopped and the server object is set back to null.
+	 * If the loop back address is used, a message is displayed to warn the user
+	 * that the server will not be able to receieve information from the client.
 	 * 
 	 */
 	private void btnStartStopServerListener(){
+		String address = null;
+		int port = 0;
 		if(server == null){
-			String address = (String) jcbInterfaces.getSelectedItem();
-			int port = Integer.parseInt(jtfPort.getText());
+			address = (String) jcbInterfaces.getSelectedItem();
+			port = Integer.parseInt(jtfPort.getText());
 			server = new JbcsServer(address, port);
 			server.addServerDatareceivedListener(this);
 			server.start();
@@ -184,6 +187,8 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 				trayIcon.getMenuItemStartStopServer().setLabel("Stop server");
 			else if(swtWidgets != null)
 				swtWidgets.changeMenuItemLabel("Stop server", swtWidgets.getItemStartServer());
+			if(address.equals("127.0.0.1"))
+				JOptionPane.showMessageDialog(this, "The server is listening on the loopback address. This will prevent the server from receieving information from the client.", "Warning", JOptionPane.WARNING_MESSAGE);
 		}else if(server!= null){
 			stopServer();
 			btnStartStopServer.setText("Start server");
