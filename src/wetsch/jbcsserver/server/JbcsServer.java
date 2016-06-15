@@ -17,12 +17,13 @@ import java.util.Enumeration;
 import java.util.HashSet;
 
 import wetsch.jbcsserver.server.listeners.JbcsServerListener;
+import wetsch.jbcsserver.server.listeners.ServerEvent;
 import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
- * Last modified on 6/11/2016
+ * Last modified on 6/14/2016
  * Changes:
- *Created thread for each accepted connection.
+ *Added calls to the start and stop method of the JbcsServerListener.
  */
 /**
  * This class extends Thread.  It uses this thread to listen for incoming connections from the Wireless barcode scanner Android app. 
@@ -86,6 +87,10 @@ public class JbcsServer extends Thread{
 			server = new ServerSocket();
 			server.bind(new InetSocketAddress(hostAddress, port),1);
 			running = true;
+			if(listeners != null){
+				for(JbcsServerListener l : listeners)
+					l.serverStarted(new ServerEvent(this));
+			}
 			sendMessageToConsole("JBCS server is running");
 			while(running){
 				ListenForConnections();
@@ -107,6 +112,10 @@ public class JbcsServer extends Thread{
 	public void shutDownServer() throws IOException{
 		server.close();
 		running = false;
+		if(listeners != null){
+			for(JbcsServerListener l : listeners)
+				l.ServerStopped(new ServerEvent(this));
+		}
 		sendMessageToConsole("Server shutdown successfully");
 	}
 	
@@ -183,7 +192,7 @@ public class JbcsServer extends Thread{
 	private void sendMessageToConsole(String message){
 		if(listeners != null){
 		for(JbcsServerListener l : listeners)
-			l.barcodeServerConsole(getDateTime() +": " + message);
+			l.serverConsole(getDateTime() +": " + message);
 		}
 	}
 	

@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Listener;
 import wetsch.jbcsserver.server.JbcsServer;
 import wetsch.jbcsserver.server.listeners.BarCoderEvent;
 import wetsch.jbcsserver.server.listeners.JbcsServerListener;
+import wetsch.jbcsserver.server.listeners.ServerEvent;
 import wetsch.jbcsserver.tools.CsvFileWritter;
 import wetsch.jbcsserver.tools.DebugPrinter;
 import wetsch.jbcsserver.tools.Robot;
@@ -33,6 +34,7 @@ import wetsch.jbcsserver.tools.Robot;
 /*
 ** Last modified on 6/14/2016
  * Added warning message dialog for listening on the loopback address.
+ * implemented server start/stop JbcsServerListener methods. 
  */
 
 /**
@@ -179,27 +181,8 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 			server = new JbcsServer(address, port);
 			server.addServerDatareceivedListener(this);
 			server.start();
-			btnStartStopServer.setText("Stop Server");
-			lblServerStatus.setText("Running");
-			lblServerAddress.setText(address);
-			lblServerPort.setText(Integer.toString(port));
-			if(trayIcon != null)
-				trayIcon.getMenuItemStartStopServer().setLabel("Stop server");
-			else if(swtWidgets != null)
-				swtWidgets.changeMenuItemLabel("Stop server", swtWidgets.getItemStartServer());
-			if(address.equals("127.0.0.1"))
-				JOptionPane.showMessageDialog(this, "The server is listening on the loopback address. This will prevent the server from receieving information from the client.", "Warning", JOptionPane.WARNING_MESSAGE);
-		}else if(server!= null){
+		}else if(server!= null)
 			stopServer();
-			btnStartStopServer.setText("Start server");
-			lblServerStatus.setText("Not Running");
-			lblServerAddress.setText("N/A");
-			lblServerPort.setText("N/A");
-			if(trayIcon != null)
-				trayIcon.getMenuItemStartStopServer().setLabel("Start server");
-			else if(swtWidgets != null)
-				swtWidgets.changeMenuItemLabel("Start server", swtWidgets.getItemStartServer());
-		}
 	}
 	
 	//Listener method for the copy barcode to clip-board button.
@@ -361,9 +344,37 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 			JOptionPane.showMessageDialog(this, ex.getMessage());
 		}
 	}
-	
+	//Set UI objects when the server is started.
 	@Override
-	public void barcodeServerConsole(String message) {
+	public void serverStarted(ServerEvent e) {
+		JbcsServer s = (JbcsServer) e.getSource();
+		btnStartStopServer.setText("Stop Server");
+		lblServerStatus.setText("Running");
+		lblServerAddress.setText(s.getListeningInetAddress());
+		lblServerPort.setText(Integer.toString(s.getServerListeningPort()));
+		if(trayIcon != null)
+			trayIcon.getMenuItemStartStopServer().setLabel("Stop server");
+		else if(swtWidgets != null)
+			swtWidgets.changeMenuItemLabel("Stop server", swtWidgets.getItemStartServer());
+		if(s.getListeningInetAddress().equals("127.0.0.1"))
+			JOptionPane.showMessageDialog(this, "The server is listening on the loopback address. This will prevent the server from receieving information from the client.", "Warning", JOptionPane.WARNING_MESSAGE);
+	}
+	//Set UI objects when the server is stopped.
+	@Override
+	public void ServerStopped(ServerEvent e) {
+		btnStartStopServer.setText("Start server");
+		lblServerStatus.setText("Not Running");
+		lblServerAddress.setText("N/A");
+		lblServerPort.setText("N/A");
+		if(trayIcon != null)
+			trayIcon.getMenuItemStartStopServer().setLabel("Start server");
+		else if(swtWidgets != null)
+			swtWidgets.changeMenuItemLabel("Start server", swtWidgets.getItemStartServer());
+	}
+
+	//Console messages sent from server.
+	@Override
+	public void serverConsole(String message) {
 		jtaServerConsole.append(message + "\n");
 	}
 	

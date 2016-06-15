@@ -17,7 +17,7 @@ import wetsch.jbcsserver.server.listeners.JbcsServerListener;
 import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
- * Last modified: 6/11/2016
+ * Last modified: 6/14/2016
  */
 
 /**
@@ -110,8 +110,10 @@ public class ClientConnection extends Thread {
 				out.println("Data received by server.");
 				out.flush();
 				BarCodeData data = new BarCodeData(bType, bData);
-				for(JbcsServerListener l : listeners)
-					l.barcodeServerDatareceived(new BarCoderEvent(this, data, clientInetAddress));
+				if(listeners != null){
+					for(JbcsServerListener l : listeners)
+						l.barcodeServerDatareceived(new BarCoderEvent(this, data, clientInetAddress));
+				}
 				sendMessageToConsole("Data received from client with IP address " + clientInetAddress);
 				break;
 			case "CHECK_CONNECTION":
@@ -147,7 +149,7 @@ public class ClientConnection extends Thread {
 	private void sendMessageToConsole(String message){
 		if(listeners != null){
 		for(JbcsServerListener l : listeners)
-			l.barcodeServerConsole(getDateTime() +": " + message);
+			l.serverConsole(getDateTime() +": " + message);
 		}
 	}
 	
