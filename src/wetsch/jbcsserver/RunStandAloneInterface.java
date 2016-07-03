@@ -1,6 +1,9 @@
 package wetsch.jbcsserver;
 
-import wetsch.jbcsserver.gui.MainPanel;
+import java.io.IOException;
+
+import wetsch.jbcsserver.gui.serverinterface.MainPanel;
+import wetsch.jbcsserver.server.registrationsystem.RegisteredDevices;
 /*
  * This is the main class.
  * This Static void main method starts
@@ -8,6 +11,11 @@ import wetsch.jbcsserver.gui.MainPanel;
  */
 public class RunStandAloneInterface{
 	public static void main(String[] srgs){
-		new MainPanel(); //Start the UI interface.
+		try {
+			RegisteredDevices.readInRegisteredDevices();
+			new MainPanel(); //Start the UI interface.
+		} catch (ClassNotFoundException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

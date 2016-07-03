@@ -13,11 +13,15 @@ import java.util.HashSet;
 
 import wetsch.jbcsclient.BarCodeData;
 import wetsch.jbcsserver.server.listeners.BarCoderEvent;
+import wetsch.jbcsserver.server.listeners.DeviceRegistrationRequestListener;
 import wetsch.jbcsserver.server.listeners.JbcsServerListener;
+import wetsch.jbcsserver.server.registrationsystem.Device;
+import wetsch.jbcsserver.server.registrationsystem.RegisteredDevices;
 import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
- * Last modified: 6/14/2016
+ * Last modified: 6/28/2016
+ * Added device Registration listener.
  */
 
 /**
@@ -28,19 +32,31 @@ import wetsch.jbcsserver.tools.DebugPrinter;
  */
 public class ClientConnection extends Thread {
 	private HashSet<JbcsServerListener> listeners = null;//Hold listeners that listen for updates.
-
+	private HashSet<DeviceRegistrationRequestListener> regListeners = null;//Hold listeners that listen for updates.
+	private RegisteredDevices registeredDevices = RegisteredDevices.getInstance();
+	
 	private Socket connection = null;//The connection to the client.
 	private BufferedReader in = null;//Read the input-stream from the client.
 	private PrintWriter out = null;//The output-stream back to the client.
+	private boolean registrationActive = false;
 
 	/**
 	 * This constructor take the client connection object, and any listeners from the server.
 	 * @param connection The accepted  connection from the server
 	 * @param listeners Listeners that are from the server.
 	 */
-	public ClientConnection(Socket connection, HashSet<JbcsServerListener> listeners) {
+	public ClientConnection(Socket connection, HashSet<JbcsServerListener> listeners, boolean registrationActive) {
 		this.listeners = listeners;
 		this.connection = connection;
+		this.registrationActive = registrationActive;
+	}
+	
+	/**
+	 * Adds the Listener object to the thread that handles the accepted connections.
+	 * @param l Listener object for storing the classes listening for registration requests.
+	 */
+	public void setRegistrationListeners(HashSet<DeviceRegistrationRequestListener> l){
+		regListeners = l;
 	}
 	
 	/*The run method sets up the input/output streams and handles the data received.
@@ -100,26 +116,57 @@ public class ClientConnection extends Thread {
 	 * Once the server finishes, it will close the current connection.
 	 */
 	private void handelData() throws ClassNotFoundException, IOException{
+		String id = null;
 		String clientInetAddress = connection.getInetAddress().toString();
 		String message = in.readLine();
-
 		switch (message) {
-			case "SEND_BARCODE_DATA":
-				String bType = in.readLine();
-				String bData =in.readLine();
-				out.println("Data received by server.");
-				out.flush();
-				BarCodeData data = new BarCodeData(bType, bData);
-				if(listeners != null){
-					for(JbcsServerListener l : listeners)
-						l.barcodeServerDatareceived(new BarCoderEvent(this, data, clientInetAddress));
+			case ServerCommands.sendBarcodeData:
+				if(registeredDevices.isSystemEnabled()){
+					out.println(ServerCommands.drsEnabled);
+					out.flush();
+					id = in.readLine();
+					if(!registeredDevices.containsKey(id)){
+						out.println(ServerCommands.unregistered);
+						out.flush();
+					}else{
+						out.println(ServerCommands.registered);
+						out.flush();
+						handleBarcodeData(clientInetAddress);
+					}
+				}else{
+					out.println(ServerCommands.drsDisabled);
+					out.flush();
+					handleBarcodeData(clientInetAddress);
 				}
-				sendMessageToConsole("Data received from client with IP address " + clientInetAddress);
 				break;
-			case "CHECK_CONNECTION":
-				out.println("Connection to server is ok.");
+			case ServerCommands.checkConnection:
+				out.println(ServerCommands.connectionOk);
 				out.flush();
 				sendMessageToConsole("Connection check from client with IP address " + clientInetAddress);
+				break;
+			case ServerCommands.registerDevice:
+				id = in.readLine();
+					if(!registrationActive){
+						out.println(ServerCommands.registrationRequestInactive);
+					}else{
+						boolean registrationAccepted = false;
+						if(!registeredDevices.containsKey(id)){
+							sendMessageToConsole("Device registration ID  received by client with IP address " + clientInetAddress);
+							if(regListeners != null){
+								for(DeviceRegistrationRequestListener l : regListeners)
+									registrationAccepted = l.deviceRegistrationRequest(new Device(id, null, Calendar.getInstance().getTime()));
+							}
+							if(registrationAccepted){
+								out.println(ServerCommands.deviceRegistered);
+							}else{
+								out.println(ServerCommands.deviceRejected);
+							}
+						}else{
+							out.println(ServerCommands.registered);
+							sendMessageToConsole("Device already registered with client IP address " + clientInetAddress);
+						}
+					}
+					out.flush();
 				break;
 			default:
 				out.println("Server responded with invalid command");
@@ -139,6 +186,20 @@ public class ClientConnection extends Thread {
 		sendMessageToConsole("Connection closed for client with IP address " + connection.getInetAddress());
 		connection = null;
 	}
+	
+	private void handleBarcodeData(String clientIP) throws IOException{
+		String bType = in.readLine();
+		String bData =in.readLine();
+		out.println(ServerCommands.dataReceived);
+		out.flush();
+		BarCodeData data = new BarCodeData(bType, bData);
+		if(listeners != null){
+			for(JbcsServerListener l : listeners)
+				l.barcodeServerDatareceived(new BarCoderEvent(this, data, clientIP));
+		}
+		sendMessageToConsole("Data received from client with IP address " + clientIP);
+
+	}
 
 	
 	/*
@@ -148,8 +209,8 @@ public class ClientConnection extends Thread {
 	 */
 	private void sendMessageToConsole(String message){
 		if(listeners != null){
-		for(JbcsServerListener l : listeners)
-			l.serverConsole(getDateTime() +": " + message);
+			for(JbcsServerListener l : listeners)
+				l.serverConsole(getDateTime() +": " + message);
 		}
 	}
 	
@@ -161,5 +222,61 @@ public class ClientConnection extends Thread {
 		DateFormat df = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 		Calendar cal = Calendar.getInstance();
 		return df.format(cal.getTime());
+	}
+	
+	/**
+	 * This class holds static references to the server commands and responces.
+	 * @author kevin
+	 */
+	public static class ServerCommands{
+		/**
+		 * Command to check the server connection.
+		 */
+		public static final String checkConnection = "CHECK_CONNECTION";
+		/**
+		 * Command to register a new device.
+		 */
+		public static final String registerDevice = "REGISTER_DEVICE";
+		/**
+		 * Server response to indicate the connection is OK.
+		 */
+		public static final String connectionOk = "CONNECTION_OK";
+		/**
+		 * Command to send the barcode data.
+		 */
+		public static final String sendBarcodeData = "SEND_BARCODE_DATA";
+		/**
+		 * Server response to indicate the barcode data was received.
+		 */
+		public static final String dataReceived = "BC_DATA_RECEIVED";
+		/**
+		 * Server response to indicate the device is not registered with the server.
+		 */
+		public static final String unregistered = "UNREGISTERED";
+		/**
+		 * Server response to indicate the device is registered with the server.
+		 */
+		public static final String registered = "REGISTERED";
+		/**
+		 * Server response to indicate the device registration request was accepted by the server.
+		 */
+		public static final String deviceRegistered = "DEVICE_REGISTERED";
+		/**
+		 * Server response to indicate the device registration request was rejected by the server.
+		 */
+		public static final String deviceRejected = "DEVICE_REJECTED";
+		/**
+		 * Server response to indicate the Device registration system in enforced.
+		 */
+		public static final String drsEnabled = "DRS_ENABLED"; 
+		/**
+		 * Server response to indicate the device registration system is not enforced.
+		 */
+		public static final String drsDisabled = "DRS_DISABLED";
+		/**
+		 * Server response to indicate the server is not accepting registration requests.
+		 */
+		public static final String registrationRequestInactive = "REGISTRATION_REQUEST_INACTIVE";
+
 	}
 }

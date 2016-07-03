@@ -16,14 +16,17 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 
+import wetsch.jbcsserver.server.listeners.DeviceRegistrationRequestListener;
 import wetsch.jbcsserver.server.listeners.JbcsServerListener;
 import wetsch.jbcsserver.server.listeners.ServerEvent;
 import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
- * Last modified on 6/14/2016
+ * Last modified on 6/27/2016
  * Changes:
  *Added calls to the start and stop method of the JbcsServerListener.
+ *Added method to add a registration request listener.
+ *Updated java documentation.
  */
 /**
  * This class extends Thread.  It uses this thread to listen for incoming connections from the Wireless barcode scanner Android app. 
@@ -33,25 +36,31 @@ import wetsch.jbcsserver.tools.DebugPrinter;
  *<li> Barcode Type</li>
  *<li> Barcode</li>  
  * @author kevin
- * @version 2.0
+ * @version 2.1
  */
 public class JbcsServer extends Thread{
+
 	private boolean running = false;//Control the thread loop.
 	private ServerSocket server = null;//creates the server socket.
 	private Socket connection = null;//Creates the connection between server and client.
 	private HashSet<JbcsServerListener> listeners = null;//Hold listeners that listen for updates.
+	private HashSet<DeviceRegistrationRequestListener> regListeners = null;//Hold listeners that listen for updates.
 	private String hostAddress = null;// Servers listening address.
 	private int port = 0;//The port number the server socket listens on.
-
+	private int poolLimit = 0;//Holes the number of connections allowed in server pool.
+	private boolean registrationActive = false;
 	
 	/**
 	 * The constructor takes in a string and integer that represents the host  port number to listen on.
 	 * @param hostAddress listening interface.
 	 * @param port listening port number.
+	 * @param poolLimit The back log of connections that have not yet been accepted.
 	 */
-	public JbcsServer(String hostAddress, int port) {
+	public JbcsServer(String hostAddress, int port, int poolLimit) {
 		this.hostAddress = hostAddress;
 		this.port = port;
+		this.poolLimit = poolLimit;
+		
 	}
 	
 	/**
@@ -85,7 +94,7 @@ public class JbcsServer extends Thread{
 	public void run() {
 		try{
 			server = new ServerSocket();
-			server.bind(new InetSocketAddress(hostAddress, port),1);
+			server.bind(new InetSocketAddress(hostAddress, port),poolLimit);
 			running = true;
 			if(listeners != null){
 				for(JbcsServerListener l : listeners)
@@ -96,6 +105,11 @@ public class JbcsServer extends Thread{
 				ListenForConnections();
 			}
 		}catch(Exception e){
+			sendMessageToConsole(e.getMessage());
+			if(listeners != null){
+				for(JbcsServerListener l : listeners)
+					l.ServerStopped(new ServerEvent(this));
+			}
 			new DebugPrinter().sendDebugToFile(e);
 			e.printStackTrace();
 		}
@@ -110,12 +124,8 @@ public class JbcsServer extends Thread{
 	 * @throws IOException 
 	 */
 	public void shutDownServer() throws IOException{
-		server.close();
 		running = false;
-		if(listeners != null){
-			for(JbcsServerListener l : listeners)
-				l.ServerStopped(new ServerEvent(this));
-		}
+		server.close();
 		sendMessageToConsole("Server shutdown successfully");
 	}
 	
@@ -136,30 +146,60 @@ public class JbcsServer extends Thread{
 	}
 	
 	/**
-	 * Returns true if server is running otherwise returns false.
+	 * Returns true if server is running, otherwise returns false.
 	 * @return boolean
 	 */
 	public boolean isServerRunning(){
 		return running;
 	}
-		
+	
 	/**
-	 * Add a data revived listener to the object.
-	 * @param listener
+	 * Add a registration request listener.<br>
+	 * <b>Note:</b> This listener should only contain one class implementing this listener at a time.
+	 * If more then one class that implements this listener is found in the listener, and the server 
+	 * loops through multiple classes, it can result in a false accept or reject.
+	 * The listener will not be added if it already exists in the list of listeners.
+	 * @param l The class that implements this listener.
 	 */
-	public void addServerDatareceivedListener(JbcsServerListener listener){
+	public void addRegistrationRequestListener(DeviceRegistrationRequestListener l){
+		if(regListeners == null)
+			regListeners = new HashSet<DeviceRegistrationRequestListener>();
+		if(!regListeners.contains(l))
+			regListeners.add(l);
+	}
+	
+	/**
+	 * Removes the registration request listener.
+	 * If the listener does not exist in the list, it will not be removed.
+	 * @param l The listener to be removed.
+	 */
+	public void removeRegistrationRequestListener(DeviceRegistrationRequestListener l){
+		if(regListeners != null){
+			if(regListeners.contains(l))
+				regListeners.remove(l);
+			if(regListeners.size() == 0)
+				regListeners = null;
+		}
+	}
+	/**
+	 * Add a JBCS server listener. 
+	 * If the listener exists in the list, it will not be added.
+	 * 
+	 * @param listener to be added.
+	 */
+	public void addListener(JbcsServerListener listener){
 		if(listeners == null)
 			listeners = new HashSet<JbcsServerListener>();
 		if(!listeners.contains(listener))
 			listeners.add(listener);
 	}
-	
 
 	/**
-	 * Removes the listener from the object.
-	 * @param listener
+	 * Removes a JBCS server listener. 
+	 * If the listener does not exist in the list, it will not be removed.
+	 * @param listener Listener to be removed.
 	 */
-	public void removeServerDatareceivedListener(JbcsServerListener listener){
+	public void removeListener(JbcsServerListener listener){
 		if(listeners.contains(listener))
 			listeners.remove(listener);
 		if(listeners.size() == 0)
@@ -167,11 +207,20 @@ public class JbcsServer extends Thread{
 	}
 	
 	/**
-	 * Removes all listeners from the object.
+	 * Removes all JBCS server listeners associated with this object.
 	 */
-	public void removeAllServerDatareceivedListener(){
-		listeners.clear();
-		listeners = null;
+	public void removeAlListeners(){
+		if(listeners != null){
+			listeners.clear();
+			listeners = null;
+		}if(regListeners != null){
+			regListeners.clear();
+			regListeners = null;
+		}
+	}
+	
+	public void deviceRegistrationEnabled(boolean active){
+		registrationActive = active;
 	}
 	
 	//Listen for incoming connections.
@@ -179,7 +228,8 @@ public class JbcsServer extends Thread{
 		if(connection == null && running){
 			connection = server.accept();
 			sendMessageToConsole("Device connected with IP Address " + connection.getInetAddress().toString());
-			ClientConnection client = new ClientConnection(connection, listeners);
+			ClientConnection client = new ClientConnection(connection, listeners, registrationActive);
+			client.setRegistrationListeners(regListeners);
 			client.start();
 			connection = null;
 		}

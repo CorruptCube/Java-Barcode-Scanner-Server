@@ -26,8 +26,6 @@ import java.util.Calendar;
  */
 public class DebugPrinter extends Thread{
 	
-	private final String homeDir = System.getProperty("user.home");//Stores the path to the users home directory.
-	private final File applicationDirectory = new File(homeDir + "/JBCS");//The File that will store the debug output.
 	private final String filename;//The file name to save the debug reports.
 	private Exception e = null;//the exception to be written.
 	
@@ -52,9 +50,7 @@ public class DebugPrinter extends Thread{
 	@Override
 	public void run() {
 		try {
-			File report = new File(applicationDirectory+"/"+filename);
-			if(!applicationDirectory.exists())
-				applicationDirectory.mkdirs();
+			File report = new File(Tools.getApplicationDir() +"/"+filename);
 			if(!report.exists())
 				report.createNewFile();
 			FileWriter fw = new FileWriter(report, true);
@@ -79,13 +75,6 @@ public class DebugPrinter extends Thread{
 	public void sendDebugToFile(Exception e){
 		this.e = e;
 		start();
-	}
-	/**
-	 * Returns the absolute path to the debug output file.
-	 * @return String
-	 */
-	public String getDebugReportFilePath(){
-		return homeDir + "/" + filename;
 	}
 	//Returns the current date and time to time-stamp the debug output.
 	private static String getCurrentDateTime(){

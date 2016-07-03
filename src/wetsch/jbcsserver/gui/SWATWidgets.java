@@ -1,5 +1,6 @@
 package wetsch.jbcsserver.gui;
 
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
@@ -14,6 +15,7 @@ import org.eclipse.swt.widgets.Tray;
 import org.eclipse.swt.widgets.TrayItem;
 
 import wetsch.jbcsserver.tools.DebugPrinter;
+import wetsch.jbcsserver.tools.Tools;
 
 /*
  * Last modified 2/8/2016
@@ -228,7 +230,6 @@ public class SWATWidgets {
 	public String getSWTFileDialog() throws InterruptedException{
 		final Object lock = new Object();
 		disposableString = null;
-		
 		synchronized (lock) {
 			display.asyncExec(new Runnable() {
 				@Override
@@ -236,6 +237,7 @@ public class SWATWidgets {
 					synchronized (lock) {
 						FileDialog fd = new FileDialog(shell, SWT.SAVE);
 						fd.setText("Save file to?");
+						fd.setFilterPath(Tools.getApplicationDir());
 						fd.open();
 						if(fd.getFileName().equals("Untitled")){
 							lock.notify();
