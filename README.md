@@ -5,6 +5,7 @@ Collects the barcode data from an android device running the client app.
 7/3/2016
 Added 2.1 src and jar for version 2.1 of the server.
 */
+
 /*
 6/9/2016
 Link to Android client source: https://github.com/CorruptCube/JBCS-Client
