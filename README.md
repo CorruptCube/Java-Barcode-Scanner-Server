@@ -1,6 +1,11 @@
 # Java-Barcode-Scanner-Server
 Collects the barcode data from an android device running the client app.  
 /*
+Version 2.0 will only work with the version of the client that matches this version.
+
+*/
+
+/*
 6/9/2016
 Link to Android client source: https://github.com/CorruptCube/JBCS-Client
 */
