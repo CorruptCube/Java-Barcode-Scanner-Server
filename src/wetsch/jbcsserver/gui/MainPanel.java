@@ -1,6 +1,7 @@
 package wetsch.jbcsserver.gui;
 
 import java.awt.AWTException;
+import java.awt.Component;
 import java.awt.Image;
 import java.awt.SystemTray;
 import java.awt.Toolkit;	
@@ -17,7 +18,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import org.eclipse.swt.widgets.Event;
@@ -278,6 +281,11 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 	/*Listener method for saving bar-code table data to CSV file.
 	 */
 	private void saveBarcodeDataTableAsCsvFile(){
+		JTextField delim = new JTextField();
+		Component[] dialog =  new Component[]{
+			new JLabel("Enter a delimiter."),
+			delim
+		};
 		if(jtbcTable.getRowCount() == 0){
 			JOptionPane.showMessageDialog(this, "There is no barcode data to write.");
 			return;
@@ -287,8 +295,8 @@ public class MainPanel  extends MainPanelLayout implements JbcsServerListener, A
 			return;
 		
 		try{
-			CsvFileWritter cfw = new CsvFileWritter(getBarcodeTableData(), "|");
-			cfw.writeCsvFile(fileName);
+			JOptionPane.showMessageDialog(this, dialog, "What is the delimter?",JOptionPane.QUESTION_MESSAGE);
+			CsvFileWritter cfw = new CsvFileWritter(getBarcodeTableData(), delim.getText().toString());			cfw.writeCsvFile(fileName);
 			lblMessages.setText("File saved successfully to " + fileName);
 		}catch(Exception e){
 			new DebugPrinter().sendDebugToFile(e);
