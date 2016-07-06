@@ -29,9 +29,9 @@ import javax.swing.table.DefaultTableModel;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import wetsch.jbcsserver.gui.SWATWidgets;
 import wetsch.jbcsserver.gui.SystemTrayIcon;
 import wetsch.jbcsserver.gui.registereddevices.RegisteredDeicesMainPanel;
+import wetsch.jbcsserver.gui.swt.SWATWidgets;
 import wetsch.jbcsserver.server.JbcsServer;
 import wetsch.jbcsserver.server.listeners.BarCoderEvent;
 import wetsch.jbcsserver.server.listeners.JbcsServerListener;

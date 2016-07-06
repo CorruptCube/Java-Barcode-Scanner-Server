@@ -79,6 +79,7 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 		} catch (IOException e) {
 			new DebugPrinter().sendDebugToFile(e);
 			e.printStackTrace();
+			showMessageDialog(e.getMessage());
 		}
 	}
 	

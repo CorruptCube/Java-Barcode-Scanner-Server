@@ -1,4 +1,4 @@
-package wetsch.jbcsserver.gui;
+package wetsch.jbcsserver.gui.swt;
 
 
 import org.eclipse.swt.SWT;

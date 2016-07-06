@@ -9,9 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /*
- * Last modified 612/2016
- * Changes:
- * Extended Thread.
+ * Last modified 7/6/2016
  */
 
 /**
@@ -36,7 +34,7 @@ public class DebugPrinter extends Thread{
 	 * @param filename The filename to write the output to.
 	 */
 	public DebugPrinter(){
-		this.filename  = "JBCS-server-debug-report.txt";
+		this.filename  = Tools.getDebugPrinterFilePath();
 	}
 	
 	
@@ -50,7 +48,7 @@ public class DebugPrinter extends Thread{
 	@Override
 	public void run() {
 		try {
-			File report = new File(Tools.getApplicationDir() +"/"+filename);
+			File report = new File(filename);
 			if(!report.exists())
 				report.createNewFile();
 			FileWriter fw = new FileWriter(report, true);
