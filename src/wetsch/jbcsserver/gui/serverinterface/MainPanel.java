@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import wetsch.jbcsserver.gui.SystemTrayIcon;
+import wetsch.jbcsserver.gui.debugreporting.DebugReportPanel;
 import wetsch.jbcsserver.gui.registereddevices.RegisteredDeicesMainPanel;
 import wetsch.jbcsserver.gui.swt.SWATWidgets;
 import wetsch.jbcsserver.server.JbcsServer;
@@ -87,6 +88,7 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 		//Menu bar listeners
 		menuBar.jmiRegisteredDevices.addActionListener(new MenuBarListener());
 		menuBar.jmiExit.addActionListener(new MenuBarListener());
+		menuBar.jmiDebugReport.addActionListener(new MenuBarListener());
 	}
 	
 	/*
@@ -378,6 +380,8 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 				openRegisteredDevices();
 			}else if(e.getSource() == menuBar.jmiExit){
 				btnExitListener();
+			}else if(e.getSource() == menuBar.jmiDebugReport){
+				new DebugReportPanel();
 			}
 		}
 	}

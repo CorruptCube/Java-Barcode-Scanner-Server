@@ -126,7 +126,7 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 	private boolean registerDevice(int action, Device device){
 		switch (action) {
 		case 0:
-			int selection = JOptionPane.showConfirmDialog(null, "Registration request received by device with ID:" + device.getDeviceId() + " , would you like to register this device?");
+			int selection = JOptionPane.showConfirmDialog(null, "Registration request received by device with ID:" + device.getDeviceId() + " , would you like to register this device?", "Device request", JOptionPane.YES_NO_OPTION);
 			if(selection == JOptionPane.YES_OPTION){
 				String deviceName = JOptionPane.showInputDialog("What would you like to name this device?");
 				device.setDeviceName(deviceName);

@@ -101,7 +101,7 @@ public abstract class RegisteredDevicesMainPanelLayout extends JFrame{
 			sb.append("The server is in the listening state to accept registration requests.  ");
 			sb.append("You may send a request from the device at this time.  ");
 			sb.append("Once a request is received, a message will pop up in this window asking if you would like to register this device.  ");
-			sb.append("You may click yes to accept the registration request, or you may click no or cancel to reject it.");
+			sb.append("You may click yes to accept the registration request, or you may click no to reject it.");
 			sb.append("</html>");
 			return sb.toString();
 		}else if(status == serverStatusNotRunningMessage){
