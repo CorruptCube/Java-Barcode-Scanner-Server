@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 
 import wetsch.jbcsserver.gui.serverinterface.MainPanel;
 import wetsch.jbcsserver.server.registrationsystem.RegisteredDevices;
+import wetsch.jbcsserver.tools.DebugPrinter;
 import wetsch.jbcsserver.tools.Tools;
 
 /*
@@ -30,6 +31,7 @@ public class RunStandAloneInterface {
 			f.delete();
 			JOptionPane.showMessageDialog(null, message.toString(), "Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
+			new DebugPrinter().sendDebugToFile(e);
 		}
 		new MainPanel(); // Start the UI interface.
 

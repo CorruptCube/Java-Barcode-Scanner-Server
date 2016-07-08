@@ -9,6 +9,7 @@ import java.awt.Rectangle;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -22,6 +23,8 @@ public abstract class DebugReportPanelLayout extends JFrame{
 	protected JTextArea jtaDebugReport = new JTextArea();
 	
 	private JPanel container = new JPanel(new GridBagLayout());
+	
+	protected JLabel lblFilePath = new JLabel();
 	
 	protected JButton btnClearLog = new JButton("Clear Log File.");
 	protected JButton btnClose = new JButton("Close");
@@ -42,11 +45,12 @@ public abstract class DebugReportPanelLayout extends JFrame{
 	private void layoutSetup() {
 		add(container);
 		
+		addComp(container, lblFilePath, 1, 1, 2, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, 0, 0);
 		jtaDebugReport.setEditable(false);
 		JScrollPane scroolPane = new JScrollPane(jtaDebugReport);
-		addComp(container, scroolPane, 1, 1, 2, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.BOTH, 0, 0.9);
-		addComp(container, btnClearLog, 1, 2, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.NONE, 0, 0.1);
-		addComp(container, btnClose, 2, 2, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.NONE, 1, 0.1);
+		addComp(container, scroolPane, 1, 2, 2, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.BOTH, 0, 0.9);
+		addComp(container, btnClearLog, 1, 3, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.NONE, 0, 0.1);
+		addComp(container, btnClose, 2, 3, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.NONE, 1, 0.1);
 	}
 
 

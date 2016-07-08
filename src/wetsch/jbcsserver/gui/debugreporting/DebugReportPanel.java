@@ -32,6 +32,7 @@ public class DebugReportPanel extends DebugReportPanelLayout implements ActionLi
 		if(!debugReportFile.exists())
 			return;
 		try {
+			lblFilePath.setText("File:" + debugReportFile.getAbsolutePath());
 			byte[] data = new byte[(int) debugReportFile.length()];
 			RandomAccessFile raf = new RandomAccessFile(debugReportFile, "r");
 			raf.read(data);
