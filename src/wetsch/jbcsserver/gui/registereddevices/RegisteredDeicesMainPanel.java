@@ -24,7 +24,7 @@ import wetsch.jbcsserver.server.registrationsystem.RegisteredDevices;
 import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
- * Last modified 6/29/2016
+ * Last modified 7/9/2016
  */
 
 /**
@@ -219,9 +219,12 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 	 * not take effect on application launch.
 	 */
 	private void updateDeviceAction(){
-		jlDevieList.getSelectedValue().setDeviceName(jtfDeviceName.getText().toString());
-		jlDevieList.updateUI();
-		SaveDevices();
+		if(jlDevieList.getSelectedIndex() != -1){
+			jlDevieList.getSelectedValue().setDeviceName(jtfDeviceName.getText().toString());
+			jlDevieList.updateUI();
+			SaveDevices();
+		}else
+			JOptionPane.showMessageDialog(this, "You must select a device.");
 	}
 	
 	//Listeners

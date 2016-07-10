@@ -22,10 +22,10 @@ public class SystemTrayIcon extends TrayIcon {
 	private SystemTray tray = null; //Notification system tray.
 	private ActionListener listener = null;//Menu item listener
 	private PopupMenu menu = new PopupMenu();//Pop-up menu on tray icon.
-	private MenuItem itemOpenInterface = new MenuItem("Hide interface");//Show hide interface menu item.
+	private MenuItem itemOpenInterface = new MenuItem("Hide Interface");//Show hide interface menu item.
 	private MenuItem itemStartStopServer = new MenuItem("Start Server");//Start stop server menu item.
-	private MenuItem itemStartStopRobot = new MenuItem("Turn robot on");//Start stop robot menu item
-	private MenuItem itemExit = new MenuItem("Exit");//Exit program menu item.
+	private MenuItem itemStartStopRobot = new MenuItem("Turn Robot On");//Start stop robot menu item
+	private MenuItem itemExit = new MenuItem("Exit");//Exit Program menu item.
 
 	/**
 	 * Takes an image and listener.

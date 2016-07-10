@@ -74,10 +74,10 @@ public abstract class MainPanelLayout extends JFrame{
 	protected SocketPortField jtfPort = new SocketPortField(9800);//Holds the listening port for the server.  Default port is 9800.
 	protected JTextField jtfConnectionLimit = new JTextField("1");//Server connection pool limit.
 	
-	protected JButton btnStartStopServer = new JButton("Start server");//Button to start/stop the server.
-	protected JButton btnCopyBarcodeToClipboard = new JButton("Copy barcode to clipboard");//Button to copy barcode value to the clip-board.
-	protected JButton btnRobot = new JButton("Turn robot on");//Button to turn on/off robot.
-	protected JButton btnCloseToTray = new JButton("Minimize to tray");//Button to minimize to system tray.
+	protected JButton btnStartStopServer = new JButton("Start Server");//Button to start/stop the server.
+	protected JButton btnCopyBarcodeToClipboard = new JButton("Copy Barcode to Clipboard");//Button to copy barcode value to the clip-board.
+	protected JButton btnRobot = new JButton("Turn Robot On");//Button to turn on/off robot.
+	protected JButton btnCloseToTray = new JButton("Minimize to Tray");//Button to minimize to system tray.
 	protected JButton btnConsoleClear = new JButton(new ImageIcon(getClass().getResource("/console-clear-btn.png")));//Button to clear the console.
 	protected JButton btnSaveConsole = new JButton(new ImageIcon(getClass().getResource("/console-save-btn.png")));//Button to save console messages to file.
 	protected JButton btnSaveCsvFile = new JButton(new ImageIcon(getClass().getResource("/save-csv-file-btn.png")));//Button to save barcode table data to CSV file.

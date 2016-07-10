@@ -10,6 +10,10 @@ import javax.swing.JOptionPane;
 
 import wetsch.jbcsserver.tools.Tools;
 
+/*
+ * Last Modified: 7/7/2016
+ */
+
 public class DebugReportPanel extends DebugReportPanelLayout implements ActionListener{
 	private static final long serialVersionUID = 1L;
 

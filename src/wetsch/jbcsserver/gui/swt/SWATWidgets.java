@@ -18,7 +18,7 @@ import wetsch.jbcsserver.tools.DebugPrinter;
 import wetsch.jbcsserver.tools.Tools;
 
 /*
- * Last modified 2/8/2016
+ * Last modified 7/9/2016
  * Changes:
  * Added error message dialog box method.
 
@@ -83,11 +83,11 @@ public class SWATWidgets {
 
 		menu = new Menu(shell, SWT.POP_UP);
 		itemShowHideInterface = new MenuItem(menu, SWT.PUSH);
-		itemShowHideInterface.setText("Hide interface");
+		itemShowHideInterface.setText("Hide Interface");
 		itemStartServer = new MenuItem(menu, SWT.PUSH);
 		itemStartServer.setText("Start Server");
 		itemStartStopRobot = new MenuItem(menu, SWT.PUSH);
-		itemStartStopRobot.setText("Turn robot on");
+		itemStartStopRobot.setText("Turn Robot On");
 		itemExit = new MenuItem(menu, SWT.PUSH);
 		itemExit.setText("Exit");
 		Tray tray = display.getSystemTray();

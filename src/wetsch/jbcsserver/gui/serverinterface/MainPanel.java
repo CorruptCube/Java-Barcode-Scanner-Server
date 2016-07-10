@@ -43,7 +43,7 @@ import wetsch.jbcsserver.tools.Robot;
 import wetsch.jbcsserver.tools.Tools;
 
 /*
-* Last modified on 6/22/2016
+* Last modified on 7/9/2016
  *Changes:
  *Changed the server's listener over to a private class.
  */
@@ -216,18 +216,18 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 	private void btnRobotListener(){
 		if(useRobot){
 			useRobot = false;
-			btnRobot.setText("Turn robot on");
+			btnRobot.setText("Turn Robot On");
 			if(trayIcon != null)
-				trayIcon.getMenuItemStartStopRobot().setLabel("Turn robot on");
+				trayIcon.getMenuItemStartStopRobot().setLabel("Turn Robot On");
 			else if(swtWidgets != null)
-				swtWidgets.changeMenuItemLabel("Turn robot on", swtWidgets.getItemStartStopRobot());
+				swtWidgets.changeMenuItemLabel("Turn Robot On", swtWidgets.getItemStartStopRobot());
 		}else{
 			useRobot = true;
-			btnRobot.setText("Turn robot off");
+			btnRobot.setText("Turn Robot Off");
 			if(trayIcon != null)
-				trayIcon.getMenuItemStartStopRobot().setLabel("Turn robot off");
+				trayIcon.getMenuItemStartStopRobot().setLabel("Turn Robot Off");
 			else if(swtWidgets != null)
-				swtWidgets.changeMenuItemLabel("Turn robot off", swtWidgets.getItemStartStopRobot());
+				swtWidgets.changeMenuItemLabel("Turn Robot Off", swtWidgets.getItemStartStopRobot());
 		}
 	}
 	
@@ -248,7 +248,7 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 		}else{
 			setVisible(true);
 			if(trayIcon != null){
-				trayIcon.getMenuItemOpenInterface().setLabel("Hide interface");
+				trayIcon.getMenuItemOpenInterface().setLabel("Hide Interface");
 			}else if(swtWidgets != null){
 				swtWidgets.changeMenuItemLabel("Hide Interface", swtWidgets.getItemShowHideInterface());
 			}
@@ -408,22 +408,22 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 			lblServerAddress.setText(s.getListeningInetAddress());
 			lblServerPort.setText(Integer.toString(s.getServerListeningPort()));
 			if(trayIcon != null)
-				trayIcon.getMenuItemStartStopServer().setLabel("Stop server");
+				trayIcon.getMenuItemStartStopServer().setLabel("Stop Server");
 			else if(swtWidgets != null)
-				swtWidgets.changeMenuItemLabel("Stop server", swtWidgets.getItemStartServer());
+				swtWidgets.changeMenuItemLabel("Stop Server", swtWidgets.getItemStartServer());
 			if(s.getListeningInetAddress().equals("127.0.0.1"))
 				JOptionPane.showMessageDialog(null, "The server is listening on the loopback address. This will prevent the server from receieving information from the client.", "Warning", JOptionPane.WARNING_MESSAGE);
 		}
 	
 		private void serverStopped(){
-			btnStartStopServer.setText("Start server");
+			btnStartStopServer.setText("Start Server");
 			lblServerStatus.setText("Not Running");
 			lblServerAddress.setText("N/A");
 			lblServerPort.setText("N/A");
 			if(trayIcon != null)
-				trayIcon.getMenuItemStartStopServer().setLabel("Start server");
+				trayIcon.getMenuItemStartStopServer().setLabel("Start Server");
 			else if(swtWidgets != null)
-				swtWidgets.changeMenuItemLabel("Start server", swtWidgets.getItemStartServer());
+				swtWidgets.changeMenuItemLabel("Start Server", swtWidgets.getItemStartServer());
 		}
 	
 		//Handle the barcode data when received by server.

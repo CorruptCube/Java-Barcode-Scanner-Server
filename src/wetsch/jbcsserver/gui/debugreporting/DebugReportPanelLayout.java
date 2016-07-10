@@ -49,7 +49,9 @@ public abstract class DebugReportPanelLayout extends JFrame{
 		jtaDebugReport.setEditable(false);
 		JScrollPane scroolPane = new JScrollPane(jtaDebugReport);
 		addComp(container, scroolPane, 1, 2, 2, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.BOTH, 0, 0.9);
+		btnClearLog.setToolTipText("Clear the log file.");
 		addComp(container, btnClearLog, 1, 3, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.NONE, 0, 0.1);
+		btnClose.setToolTipText("Close the window.");
 		addComp(container, btnClose, 2, 3, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.NONE, 1, 0.1);
 	}
 
