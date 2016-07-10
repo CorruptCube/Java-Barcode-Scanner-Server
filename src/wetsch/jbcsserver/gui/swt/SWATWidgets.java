@@ -83,7 +83,7 @@ public class SWATWidgets {
 
 		menu = new Menu(shell, SWT.POP_UP);
 		itemShowHideInterface = new MenuItem(menu, SWT.PUSH);
-		itemShowHideInterface.setText("Show interface");
+		itemShowHideInterface.setText("Hide interface");
 		itemStartServer = new MenuItem(menu, SWT.PUSH);
 		itemStartServer.setText("Start Server");
 		itemStartStopRobot = new MenuItem(menu, SWT.PUSH);
