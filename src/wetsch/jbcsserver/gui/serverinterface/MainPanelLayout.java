@@ -32,10 +32,7 @@ import wetsch.jbcsserver.server.JbcsServer;
 import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
- * Last modified on 7/1/2016
- * Changes:
- * Modified the port numbr field with a custom field that only excepts numbers.
- * This custom field only will let you put a number ranging from 0 to 65535.
+ * Last modified on 7/12/2016
  */
 
 /**
@@ -216,8 +213,10 @@ public abstract class MainPanelLayout extends JFrame{
 	}
 
 
-	//Populating the combo box that holds the available IPV4 addresses on the system.
-	private void populatejcbInterfaces(){
+	/**
+	 * Populate the combo box that holds the available IPV4 addresses on the system.
+	 */
+	protected void populatejcbInterfaces(){
 		try {
 			if(JbcsServer.getAvailableIPV4Addresses().length > 0)
 				jcbInterfaces.setModel(new DefaultComboBoxModel<String>(JbcsServer.getAvailableIPV4Addresses()));

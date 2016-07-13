@@ -43,9 +43,9 @@ import wetsch.jbcsserver.tools.Robot;
 import wetsch.jbcsserver.tools.Tools;
 
 /*
-* Last modified on 7/9/2016
+* Last modified on 7/12/2016
  *Changes:
- *Changed the server's listener over to a private class.
+ *Add listener for refreshing the interfaces menu item.
  */
 
 /**
@@ -88,6 +88,7 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 		//Menu bar listeners
 		menuBar.jmiRegisteredDevices.addActionListener(new MenuBarListener());
 		menuBar.jmiExit.addActionListener(new MenuBarListener());
+		menuBar.jmiRefreshInterfaces.addActionListener(new MenuBarListener());
 		menuBar.jmiDebugReport.addActionListener(new MenuBarListener());
 	}
 	
@@ -362,10 +363,10 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 	}
 	
 	private class MenuBarListener implements ActionListener{
+		//Method to open device registration frame.
 		private void openRegisteredDevices(){
 			registeredDeicesMainPanel = new RegisteredDeicesMainPanel(server);
 			registeredDeicesMainPanel.addWindowListener(new WindowAdapter() {
-
 				@Override
 				public void windowClosed(WindowEvent e) {
 					registeredDeicesMainPanel = null;
@@ -380,6 +381,8 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 				openRegisteredDevices();
 			}else if(e.getSource() == menuBar.jmiExit){
 				btnExitListener();
+			}else if(e.getSource() == menuBar.jmiRefreshInterfaces){
+				populatejcbInterfaces();
 			}else if(e.getSource() == menuBar.jmiDebugReport){
 				new DebugReportPanel();
 			}
