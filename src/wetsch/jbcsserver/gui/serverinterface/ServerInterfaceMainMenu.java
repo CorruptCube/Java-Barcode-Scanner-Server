@@ -22,9 +22,9 @@ public class ServerInterfaceMainMenu extends JMenuBar {
 
 	private void setupMenu() {
 		add(jmFile);
-		jmFile.add(jmiRegisteredDevices);
 		jmFile.add(jmiExit);
 		add(jmServer);
+		jmServer.add(jmiRegisteredDevices);
 		jmServer.add(jmiRefreshInterfaces);
 		add(jmHelp);
 		jmHelp.add(jmiDebugReport);

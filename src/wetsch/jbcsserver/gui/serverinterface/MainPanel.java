@@ -86,8 +86,8 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 		btnSaveCsvFile.addActionListener(this);
 		
 		//Menu bar listeners
-		menuBar.jmiRegisteredDevices.addActionListener(new MenuBarListener());
 		menuBar.jmiExit.addActionListener(new MenuBarListener());
+		menuBar.jmiRegisteredDevices.addActionListener(new MenuBarListener());
 		menuBar.jmiRefreshInterfaces.addActionListener(new MenuBarListener());
 		menuBar.jmiDebugReport.addActionListener(new MenuBarListener());
 	}
@@ -377,10 +377,10 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(e.getSource() == menuBar.jmiRegisteredDevices){
-				openRegisteredDevices();
-			}else if(e.getSource() == menuBar.jmiExit){
+			if(e.getSource() == menuBar.jmiExit){
 				btnExitListener();
+			}else if(e.getSource() == menuBar.jmiRegisteredDevices){
+				openRegisteredDevices();
 			}else if(e.getSource() == menuBar.jmiRefreshInterfaces){
 				populatejcbInterfaces();
 			}else if(e.getSource() == menuBar.jmiDebugReport){
