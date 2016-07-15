@@ -4,6 +4,16 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+/*
+ * Last Modified 7/13/2016
+ */
+
+/**
+ * Thisclass extends JMenuBar.
+ * It configures the menu bar for the server interface UI.
+ * @author kevin
+ *
+ */
 public class ServerInterfaceMainMenu extends JMenuBar {
 	private static final long serialVersionUID = 1L;
 	
@@ -20,6 +30,7 @@ public class ServerInterfaceMainMenu extends JMenuBar {
 		setupMenu();
 	}
 
+	//Setup Menu bar.
 	private void setupMenu() {
 		add(jmFile);
 		jmFile.add(jmiExit);
@@ -30,5 +41,4 @@ public class ServerInterfaceMainMenu extends JMenuBar {
 		jmHelp.add(jmiDebugReport);
 		
 	}
-
 }

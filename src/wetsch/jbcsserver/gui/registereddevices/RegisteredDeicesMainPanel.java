@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Map.Entry;
 
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -24,11 +25,11 @@ import wetsch.jbcsserver.server.registrationsystem.RegisteredDevices;
 import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
- * Last modified 7/9/2016
+ * Last modified 7/13/2016
  */
 
 /**
- * This class is conains all the undergone code with the UI.
+ * This class is contains all the undergone code with the UI.
  * @author kevin
  * @version 2.1
  *
@@ -46,17 +47,27 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 	public RegisteredDeicesMainPanel(JbcsServer server) {
 		this.server = server;
 		SetupListeners();
-		if(server == null)
-			lblStatusMesssage.setText(getServerStatusMessage(serverStatusNotRunningMessage));
-			else{
-				lblStatusMesssage.setText(getServerStatusMessage(serverStatusRunningMessage));
-				server.addListener(serverListener);
-				server.deviceRegistrationEnabled(true);
-				server.addRegistrationRequestListener(serverListener);
-			}
+		if(server != null){
+			server.addListener(serverListener);
+			server.deviceRegistrationEnabled(true);
+			server.addRegistrationRequestListener(serverListener);
+		
+		}
 		jlDevieList.setCellRenderer(new CustomListCellRenderer());
 		populateRegistredDevices();
 		tbtenEnableSystem.setSelected(registeredDevices.isSystemEnabled());
+		setupServrStatusMessage();
+	}
+	
+	//Set up the server status message.
+	private void setupServrStatusMessage(){
+		if(server == null || !server.isServerRunning()){
+			lblStatusMesssage.setIcon(new ImageIcon(getClass().getResource("/warning-icon.png")));
+			lblStatusMesssage.setText(getServerStatusMessage(serverStatusNotRunningMessage));
+		}else{
+			lblStatusMesssage.setIcon(new ImageIcon(getClass().getResource("/info-icon.png")));
+			lblStatusMesssage.setText(getServerStatusMessage(serverStatusRunningMessage));
+		}
 	}
 	
 	//Setup listeners.
@@ -108,7 +119,6 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 				}catch(Exception e){
 					e.printStackTrace();
 				}
-				
 			}
 		});
 	}
@@ -118,7 +128,7 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 	 * If the server receives a request, the device and action are passed in 
 	 * and a dialog asking to confirm will pop up.
 	 * If a devices is being registered manually, the action is passed in and 
-	 * device can be set to null. 
+	 * device should be set to null. 
 	 * @param action action to take.
 	 * @param device the device to register.
 	 * @return
@@ -129,7 +139,10 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 			int selection = JOptionPane.showConfirmDialog(null, "Registration request received by device with ID:" + device.getDeviceId() + " , would you like to register this device?", "Device request", JOptionPane.YES_NO_OPTION);
 			if(selection == JOptionPane.YES_OPTION){
 				String deviceName = JOptionPane.showInputDialog("What would you like to name this device?");
-				device.setDeviceName(deviceName);
+				if(deviceName.equals(""))
+					device.setDeviceName("UNKNOWN");
+				else
+					device.setDeviceName(deviceName);
 				registeredDevices.put(device.getDeviceId(), device);
 				SaveDevices();
 				DefaultListModel<Device> m = (DefaultListModel<Device>) jlDevieList.getModel();
@@ -148,6 +161,10 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 				jtfDeviceId
 			};
 			JOptionPane.showMessageDialog(null,imputs, "Add device", JOptionPane.PLAIN_MESSAGE);
+			if(JtfDeviceName.getText().isEmpty() || jtfDeviceId.getText().isEmpty()){
+				JOptionPane.showMessageDialog(this, "The name or ID for the device was missing.  The operation was canceled.");
+				return false;
+			}
 			DefaultListModel<Device> m = (DefaultListModel<Device>) jlDevieList.getModel();
 			Device d = new Device(jtfDeviceId.getText().toString(), JtfDeviceName.getText().toString(), Calendar.getInstance().getTime());
 			registeredDevices.put(jtfDeviceId.getText().toString(), d);
@@ -268,15 +285,15 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 		@Override
 		public void serverStarted(ServerEvent e) {
 			JbcsServer s = (JbcsServer) e.getSource();
-			server = s;
-			server.addRegistrationRequestListener(this);
+			s.addRegistrationRequestListener(this);
 			s.deviceRegistrationEnabled(true);
-			lblStatusMesssage.setText(getServerStatusMessage(serverStatusRunningMessage));
+			server = s;
+			setupServrStatusMessage();
 		}
 		
 		@Override
 		public void ServerStopped(ServerEvent e) {
-			lblStatusMesssage.setText(getServerStatusMessage(serverStatusNotRunningMessage));
+			setupServrStatusMessage();
 		}
 
 

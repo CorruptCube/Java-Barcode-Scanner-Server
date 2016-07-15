@@ -106,7 +106,7 @@ public abstract class RegisteredDevicesMainPanelLayout extends JFrame{
 			return sb.toString();
 		}else if(status == serverStatusNotRunningMessage){
 			sb.append("The server is not runnig.  ");
-			sb.append("You must first start the server if you want to receive registration requests from the server, otherwise you wll have to add devices manually."); 
+			sb.append("You must first start the server if you want to receive registration requests from a client, otherwise you wll have to add the device manually."); 
 			sb.append("</html>");
 			return sb.toString();
 		}
