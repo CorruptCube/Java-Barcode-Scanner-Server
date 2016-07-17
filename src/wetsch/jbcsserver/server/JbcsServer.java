@@ -22,7 +22,7 @@ import wetsch.jbcsserver.server.listeners.ServerEvent;
 import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
- * Last modified on 6/27/2016
+ * Last modified on 7/17/2016
  * Changes:
  *Added calls to the start and stop method of the JbcsServerListener.
  *Added method to add a registration request listener.
@@ -227,7 +227,7 @@ public class JbcsServer extends Thread{
 	private void ListenForConnections() throws IOException{
 		if(connection == null && running){
 			connection = server.accept();
-			sendMessageToConsole("Device connected with IP Address " + connection.getInetAddress().toString());
+			sendMessageToConsole("Device connected with IP address " + connection.getInetAddress().toString());
 			ClientConnection client = new ClientConnection(connection, listeners, registrationActive);
 			client.setRegistrationListeners(regListeners);
 			client.start();

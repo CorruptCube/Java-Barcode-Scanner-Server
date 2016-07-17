@@ -20,7 +20,7 @@ import wetsch.jbcsserver.server.registrationsystem.RegisteredDevices;
 import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
- * Last modified: 6/28/2016
+ * Last modified: 7/17/2016
  * Added device Registration listener.
  */
 
@@ -128,6 +128,7 @@ public class ClientConnection extends Thread {
 					if(!registeredDevices.containsKey(id)){
 						out.println(ServerCommands.unregistered);
 						out.flush();
+						sendMessageToConsole("Unregistered device detected with IP address "+ clientInetAddress);
 					}else{
 						out.println(ServerCommands.registered);
 						out.flush();
