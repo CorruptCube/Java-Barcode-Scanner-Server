@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import wetsch.jbcsserver.tools.Tools;
 
 /*
- * Last modified 6/22/2016
+ * Last modified 7/18/2016
  */
 
 /**
@@ -26,12 +26,11 @@ import wetsch.jbcsserver.tools.Tools;
 public class RegisteredDevices extends LinkedHashMap<String, Device> implements Serializable{
 	private static final long serialVersionUID = 1L;
 
-	private static RegisteredDevices devices = null;//The instance of he registration system.
+	private static RegisteredDevices devices = new RegisteredDevices();//The instance of he registration system.
 	private boolean systemEnabled = false;//The enabled status of the registration system.
 	public static void readInRegisteredDevices() throws FileNotFoundException, IOException, ClassNotFoundException{
 		File f = new File(Tools.getApplicationDir() + "/Registered_devices.jdb");
 		if(!f.exists()){
-			devices = new RegisteredDevices();
 			return;
 		}
 		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
