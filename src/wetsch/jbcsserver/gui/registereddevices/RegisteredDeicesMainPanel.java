@@ -164,6 +164,9 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 			if(JtfDeviceName.getText().isEmpty() || jtfDeviceId.getText().isEmpty()){
 				JOptionPane.showMessageDialog(this, "The name or ID for the device was missing.  The operation was canceled.");
 				return false;
+			}else if(registeredDevices.containsKey(jtfDeviceId.getText().toString())){
+				JOptionPane.showMessageDialog(this, "Device is already registered.");
+				return false;
 			}
 			DefaultListModel<Device> m = (DefaultListModel<Device>) jlDevieList.getModel();
 			Device d = new Device(jtfDeviceId.getText().toString(), JtfDeviceName.getText().toString(), Calendar.getInstance().getTime());
