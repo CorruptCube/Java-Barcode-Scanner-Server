@@ -9,6 +9,10 @@ Pushing version 2.1 to master branch.
 */
 
 /*
+7/24/2016
+Project website: http://wetschk.com/index.php?id=project-jbcs-server
+
+/*
 7/3/2016
 Added 2.1 src and jar for version 2.1 of the server.  
 you can find the 2.1 version src under the 2.1 branch.
