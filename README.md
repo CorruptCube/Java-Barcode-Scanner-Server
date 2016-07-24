@@ -4,6 +4,11 @@ Collects the barcode data from an android device running the client app.
 Be sure to use the version of the cliet that matches the version of the server you are using.
 
 /*
+7/24/2016
+Pushing version 2.1 to master branch.
+*/
+
+/*
 7/3/2016
 Added 2.1 src and jar for version 2.1 of the server.  
 you can find the 2.1 version src under the 2.1 branch.
