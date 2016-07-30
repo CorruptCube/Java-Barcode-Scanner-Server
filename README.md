@@ -10,7 +10,7 @@ Pushing version 2.1 to master branch.
 
 /*
 7/24/2016
-Project website: http://wetschk.com/index.php?id=project-jbcs-server
+Project page: http://wetschk.com/index.php?id=project-jbcs-server
 
 /*
 7/3/2016
