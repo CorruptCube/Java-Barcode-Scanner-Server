@@ -25,7 +25,7 @@ import wetsch.jbcsserver.server.registrationsystem.RegisteredDevices;
 import wetsch.jbcsserver.tools.DebugPrinter;
 
 /*
- * Last modified 7/13/2016
+ * Last modified 9/9/2016
  */
 
 /**
@@ -218,7 +218,7 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 		Device d = jlDevieList.getSelectedValue();
 		DefaultListModel<Device> m = (DefaultListModel<Device>) jlDevieList.getModel();
 		if(registeredDevices.containsKey(d.getDeviceId())){
-			int selection = JOptionPane.showConfirmDialog(this, "Are you sure you like to remove this devie?");
+			int selection = JOptionPane.showConfirmDialog(this, "Are you sure you like to remove this devie?","Remove Device",JOptionPane.YES_NO_OPTION);
 			if(selection == JOptionPane.YES_OPTION){
 				m.removeElement(d);
 				registeredDevices.remove(d.getDeviceId());
