@@ -43,7 +43,7 @@ public class SystemTrayIcon extends TrayIcon {
 	//Setup tray icon.
 	private void setupTrayIcon() throws AWTException{
 		tray = SystemTray.getSystemTray();
-		setImageAutoSize(true);
+		setImageAutoSize(false);
 		tray.add(this);
 	}
 	
