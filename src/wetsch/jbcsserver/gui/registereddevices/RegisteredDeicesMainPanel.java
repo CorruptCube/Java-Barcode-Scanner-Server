@@ -218,7 +218,7 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 		Device d = jlDevieList.getSelectedValue();
 		DefaultListModel<Device> m = (DefaultListModel<Device>) jlDevieList.getModel();
 		if(jlDevieList.getSelectedIndex() == -1){
-			JOptionPane.showMessageDialog(this, "There is no selected devie.");
+			JOptionPane.showMessageDialog(this, "There is no selected device.");
 			return;
 		}
 		if(registeredDevices.containsKey(d.getDeviceId())){
