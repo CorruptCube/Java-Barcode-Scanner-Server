@@ -113,7 +113,7 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 	 */
 	private void setupSystemTrayIcon(){
 		try {
-			URL url = System.class.getResource("/tray_icon-16x16.png");
+			URL url = System.class.getResource("/tray_icon.png");
 			Image img = Toolkit.getDefaultToolkit().getImage(url);
 			trayIcon = new SystemTrayIcon(img, new TrayIconActionListener());
 		} catch (AWTException e) {
