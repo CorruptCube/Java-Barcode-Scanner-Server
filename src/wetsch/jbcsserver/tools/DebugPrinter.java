@@ -65,7 +65,6 @@ public class DebugPrinter extends Thread{
 	}
 
 
-
 	/**
 	 * This method sets the Exception to write to a file.
 	 * @param e Exception to write.

@@ -20,14 +20,14 @@ public abstract class DebugReportPanelLayout extends JFrame{
 
 	private GridBagConstraints jplc = new GridBagConstraints();//Layout manager to use.
 
-	protected JTextArea jtaDebugReport = new JTextArea();
+	protected JTextArea jtaDebugReport = new JTextArea();//Holds the text stored in the debug report.
 	
-	private JPanel container = new JPanel(new GridBagLayout());
+	private JPanel container = new JPanel(new GridBagLayout());//Main panel to hold components.
 	
-	protected JLabel lblFilePath = new JLabel();
+	protected JLabel lblFilePath = new JLabel();//Holds the string representation of the file path to the debug report.
 	
-	protected JButton btnClearLog = new JButton("Clear Log File.");
-	protected JButton btnClose = new JButton("Close");
+	protected JButton btnClearLog = new JButton("Clear Log File.");//Clears the debug report.
+	protected JButton btnClose = new JButton("Close");//Closes the window.
 	
 	public DebugReportPanelLayout() {
 		super("Debug Reporting");
@@ -68,6 +68,4 @@ public abstract class DebugReportPanelLayout extends JFrame{
 		 jplc.fill = stretch;
 	     thePanel.add(comp, jplc);
 	 }
-
-
 }

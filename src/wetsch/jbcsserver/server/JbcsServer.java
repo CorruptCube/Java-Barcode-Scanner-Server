@@ -48,8 +48,8 @@ public class JbcsServer extends Thread{
 	private String hostAddress = null;// Servers listening address.
 	private int port = 0;//The port number the server socket listens on.
 	private int poolLimit = 0;//Holes the number of connections allowed in server pool.
-	private boolean registrationActive = false;
-	
+	private boolean registrationActive = false;//Boolean to determine if the registration system is accepting new registration requests.
+	 
 	/**
 	 * The constructor takes in a string and integer that represents the host  port number to listen on.
 	 * @param hostAddress listening interface.
@@ -219,6 +219,10 @@ public class JbcsServer extends Thread{
 		}
 	}
 	
+	/**
+	 * Set if the registration system is or is not accepting connections.
+	 * @param active
+	 */
 	public void deviceRegistrationEnabled(boolean active){
 		registrationActive = active;
 	}

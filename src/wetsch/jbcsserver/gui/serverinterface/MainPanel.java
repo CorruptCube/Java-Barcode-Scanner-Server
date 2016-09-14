@@ -60,7 +60,7 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 	private JbcsServer server = null;//Barcode scanner server object.
 	private SWATWidgets swtWidgets = null;//SWT widgets object.
 	private SystemTrayIcon trayIcon = null;//Windows system tray icon
-	private RegisteredDeicesMainPanel registeredDeicesMainPanel = null;
+	private RegisteredDeicesMainPanel registeredDeicesMainPanel = null;//Instance to the registration system main panel controls.
 
 	public MainPanel() {
 		setupActionListeners();
@@ -325,7 +325,8 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 	}
 	
 	//Implemented Listeners
-
+	
+	//Main action listener method for the server interface main panel.
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnStartStopServer){
@@ -362,6 +363,7 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 		}
 	}
 	
+	//This class is used for the menu bar actionn listener.
 	private class MenuBarListener implements ActionListener{
 		//Method to open device registration frame.
 		private void openRegisteredDevices(){
@@ -389,6 +391,7 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 		}
 	}
 
+	//This class is used for the system tray icon for Windows and OS X based systems.
 	private class TrayIconActionListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -403,7 +406,8 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 			}
 		}
 	}
-
+	
+	//This class is used for the JBCS server listener.
 	private class JbcsServerListenerAdapter implements JbcsServerListener{
 		private void serverStarted(JbcsServer s){
 			btnStartStopServer.setText("Stop Server");

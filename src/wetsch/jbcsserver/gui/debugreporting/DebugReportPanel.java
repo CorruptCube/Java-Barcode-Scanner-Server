@@ -72,5 +72,4 @@ public class DebugReportPanel extends DebugReportPanelLayout implements ActionLi
 			dispose();
 		}
 	}
-
 }

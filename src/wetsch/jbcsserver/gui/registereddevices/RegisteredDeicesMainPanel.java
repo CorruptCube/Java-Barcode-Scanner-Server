@@ -39,8 +39,8 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 	
 	private int serverRegistrationRequest = 0;//Action for registerDevice() method when server receives a registration request.
 	private int ManualDeviceRegistration = 1;//Action for registerDevice() method to manually add device.
-	private JbcsServer server = null;
-	private RegisteredDevices registeredDevices = RegisteredDevices.getInstance();
+	private JbcsServer server = null;//Instance of the JBCS server.
+	private RegisteredDevices registeredDevices = RegisteredDevices.getInstance();//The Instence to the registered drvices.
 
 	public serverListener serverListener = new serverListener();//Listener object for the JBCS server.
 	@SuppressWarnings("unchecked")
@@ -178,6 +178,11 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 		return false;
 	}
 	
+	/*
+	 * Overwrite dispose method to make sure close window actions are triggered.
+	 * (non-Javadoc)
+	 * @see java.awt.Window#dispose()
+	 */
 	@Override
 	public void dispose(){
 		closeWindowAction();
@@ -186,6 +191,9 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 	
 	//Handlers
 	
+	/*
+	 * Trigger registration system enabled or disabled.
+	 */
 	private void triggerSystemenabledState(){
 		registeredDevices.setSystemEnabled(tbtenEnableSystem.isSelected());
 		SaveDevices();
@@ -268,7 +276,9 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 			jtfDeviceRegistrationId.setText(d.getDeviceId());
 		}
 	}
-
+	
+	
+	//Action method for buttons and controols.
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnAddDevice){

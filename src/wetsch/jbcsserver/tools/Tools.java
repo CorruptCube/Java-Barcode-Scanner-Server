@@ -4,8 +4,9 @@ import java.io.File;
 
 public abstract class Tools {
 	private static final String applicationDirectory = System.getProperty("user.home") + "/JBCS";//Stores the path to the users application home directory.
-	private static final String registeredDevicesFileName = applicationDirectory +  "/Registered_devices.jdb";
-	private static final String debugPrinteFilePath = applicationDirectory + "/JBCS-server-debug-report.txt";
+	private static final String registeredDevicesFileName = applicationDirectory +  "/Registered_devices.jdb";//Path to registration system DB file.
+	private static final String debugPrinteFilePath = applicationDirectory + "/JBCS-server-debug-report.txt";//Path to Debug report file.
+
 	/**
 	 * Returns the path to the home directory of the application.
 	 * @return String

@@ -77,4 +77,3 @@ public class Device implements Serializable{
 		return deviceName;
 	}
 }
-

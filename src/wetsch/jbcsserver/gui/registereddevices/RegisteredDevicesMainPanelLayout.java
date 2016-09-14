@@ -37,14 +37,14 @@ public abstract class RegisteredDevicesMainPanelLayout extends JFrame{
 	protected JTextField jtfDeviceAddDate = new JTextField(20);//Hold device add date.
 	protected JTextField jtfDeviceRegistrationId = new JTextField(20);//Hold device registration D.
 	
-	protected JButton btnAddDevice = new JButton("Add Device");//Add devie buton.
+	protected JButton btnAddDevice = new JButton("Add Device");//Add device button.
 	protected JButton btnRemoveDevice = new JButton("Remove Device");//Remove device button.
-	protected JButton btnUpdateDevice = new JButton("Update Device");
+	protected JButton btnUpdateDevice = new JButton("Update Device");//Update the registration system config file.
 	protected JButton btnClose = new JButton("Close");//Close the window button.
 	
 	protected CustomToggleButton tbtenEnableSystem = new CustomToggleButton("Enforce");
 	
-	protected JLabel lblStatusMesssage = new JLabel();
+	protected JLabel lblStatusMesssage = new JLabel();//Holds the status message of the JBCS server.
 	public RegisteredDevicesMainPanelLayout() {
 		super("Registered Devices");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -57,6 +57,7 @@ public abstract class RegisteredDevicesMainPanelLayout extends JFrame{
 		setVisible(true);
 	}
 
+	//Setup the panel component layout.
 	private void layoutSetup() {
 		add(container);
 		JScrollPane jsp = new JScrollPane(jlDevieList);
@@ -94,7 +95,8 @@ public abstract class RegisteredDevicesMainPanelLayout extends JFrame{
 
 		
 	}
-
+	
+	//Generate the status message based on the status of the JBCS server.
 	protected String getServerStatusMessage(int status){
 		StringBuilder sb = new StringBuilder("<html>");
 		if(status == serverStatusRunningMessage){
