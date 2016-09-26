@@ -298,6 +298,7 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 		registeredDevices.clear();
 		DefaultListModel<Device> m = (DefaultListModel<Device>)jlDevieList.getModel();
 		m.clear();
+		JOptionPane.showMessageDialog(this, "Database removed successfully.");
 	}
 	
 	
