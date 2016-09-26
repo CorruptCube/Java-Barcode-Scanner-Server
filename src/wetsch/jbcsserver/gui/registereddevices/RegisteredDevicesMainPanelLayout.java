@@ -22,6 +22,8 @@ import wetsch.jbcsserver.server.registrationsystem.Device;
 
 public abstract class RegisteredDevicesMainPanelLayout extends JFrame{
 	private static final long serialVersionUID = 1L;
+	
+	
 	private final Rectangle screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();//Hold the screen size.
 	
 	protected final int serverStatusRunningMessage = 0;//Server status message if running
@@ -32,6 +34,9 @@ public abstract class RegisteredDevicesMainPanelLayout extends JFrame{
 	private JPanel container = new JPanel(new GridBagLayout());//Main container.
 	
 	protected JList<Device> jlDevieList = new JList<Device>();//Hold device list.
+	
+	protected MainMenu mainMenu = new MainMenu();
+
 	
 	protected JTextField jtfDeviceName = new JTextField(20);//Hold device name.
 	protected JTextField jtfDeviceAddDate = new JTextField(20);//Hold device add date.
@@ -53,6 +58,7 @@ public abstract class RegisteredDevicesMainPanelLayout extends JFrame{
 		setLocationRelativeTo(null);
 		setLayout(new GridLayout(1,1));
 		setLayout(new GridLayout(1,1));
+		setJMenuBar(mainMenu);
 		layoutSetup();
 		setVisible(true);
 	}

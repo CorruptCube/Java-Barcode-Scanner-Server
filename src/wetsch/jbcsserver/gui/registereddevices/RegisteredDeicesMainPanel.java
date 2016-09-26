@@ -2,6 +2,7 @@ package wetsch.jbcsserver.gui.registereddevices;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Map.Entry;
@@ -23,6 +24,7 @@ import wetsch.jbcsserver.server.listeners.ServerEvent;
 import wetsch.jbcsserver.server.registrationsystem.Device;
 import wetsch.jbcsserver.server.registrationsystem.RegisteredDevices;
 import wetsch.jbcsserver.tools.DebugPrinter;
+import wetsch.jbcsserver.tools.Tools;
 
 /*
  * Last modified 9/10/2016
@@ -78,6 +80,9 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 		btnUpdateDevice.addActionListener(this);
 		btnClose.addActionListener(this);
 		tbtenEnableSystem.addActionListener(this);
+		
+		//Menu bar items.
+		mainMenu.jmiRemoveDatabase.addActionListener(this);
 	}
 	
 	/*
@@ -277,6 +282,24 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 		}
 	}
 	
+	//Removes the registration system database and the database file on disk.
+	private void actionRemoveDatabase(){
+		int action = JOptionPane.showConfirmDialog(this, "Are you sure you like to remove the database?  Warning, The devices can not be recovered and will be removed from the system.", "Remove Database", JOptionPane.YES_NO_OPTION);
+		if(action == JOptionPane.NO_OPTION){
+			JOptionPane.showMessageDialog(this, "Operation Canceled.");
+			return;
+		}
+		File dbFile = new File(Tools.getRegisteredDevicesFilePath());
+		if(!dbFile.exists()){
+			JOptionPane.showMessageDialog(this, "There is no database stored on this system.");
+			return;
+		}
+		dbFile.delete();
+		registeredDevices.clear();
+		DefaultListModel<Device> m = (DefaultListModel<Device>)jlDevieList.getModel();
+		m.clear();
+	}
+	
 	
 	//Action method for buttons and controols.
 	@Override
@@ -291,6 +314,8 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 			dispose();
 		}else if(e.getSource() == tbtenEnableSystem){
 			triggerSystemenabledState();
+		}else if(e.getSource() == mainMenu.jmiRemoveDatabase){
+			actionRemoveDatabase();
 		}
 	}
 
