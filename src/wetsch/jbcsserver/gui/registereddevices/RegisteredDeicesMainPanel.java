@@ -27,7 +27,7 @@ import wetsch.jbcsserver.tools.DebugPrinter;
 import wetsch.jbcsserver.tools.Tools;
 
 /*
- * Last modified 9/10/2016
+ * Last modified 9/26/2016
  */
 
 /**
@@ -281,6 +281,8 @@ public class RegisteredDeicesMainPanel extends RegisteredDevicesMainPanelLayout 
 			jtfDeviceRegistrationId.setText(d.getDeviceId());
 		}
 	}
+	
+	//Action methods for menu bar.
 	
 	//Removes the registration system database and the database file on disk.
 	private void actionRemoveDatabase(){

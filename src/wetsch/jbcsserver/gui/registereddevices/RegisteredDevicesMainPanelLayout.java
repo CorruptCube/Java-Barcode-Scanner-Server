@@ -20,6 +20,10 @@ import javax.swing.SwingConstants;
 import wetsch.jbcsserver.gui.customuiobjects.CustomToggleButton;
 import wetsch.jbcsserver.server.registrationsystem.Device;
 
+/*
+ *Last modified 9/26/2016 
+ */
+
 public abstract class RegisteredDevicesMainPanelLayout extends JFrame{
 	private static final long serialVersionUID = 1L;
 	
