@@ -33,12 +33,12 @@ import wetsch.jbcsserver.tools.DebugPrinter;
 public class ClientConnection extends Thread {
 	private HashSet<JbcsServerListener> listeners = null;//Hold listeners that listen for updates.
 	private HashSet<DeviceRegistrationRequestListener> regListeners = null;//Hold listeners that listen for updates.
-	private RegisteredDevices registeredDevices = RegisteredDevices.getInstance();
+	private RegisteredDevices registeredDevices = RegisteredDevices.getInstance();//Instance to the registration system.
 	
 	private Socket connection = null;//The connection to the client.
 	private BufferedReader in = null;//Read the input-stream from the client.
 	private PrintWriter out = null;//The output-stream back to the client.
-	private boolean registrationActive = false;
+	private boolean registrationActive = false;//Determine if a new device can register with the system or not.
 
 	/**
 	 * This constructor take the client connection object, and any listeners from the server.
@@ -188,6 +188,7 @@ public class ClientConnection extends Thread {
 		connection = null;
 	}
 	
+	//Handles the barcode data when a client sends the barcode data to the server.
 	private void handleBarcodeData(String clientIP) throws IOException{
 		String bType = in.readLine();
 		String bData =in.readLine();

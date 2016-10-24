@@ -37,7 +37,4 @@ public class CustomListCellRenderer extends JLabel implements ListCellRenderer{
 		return this;
 	}
 
-
-	
-
 }

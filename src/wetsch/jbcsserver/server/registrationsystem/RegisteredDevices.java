@@ -28,6 +28,13 @@ public class RegisteredDevices extends LinkedHashMap<String, Device> implements 
 
 	private static RegisteredDevices devices = null;//The instance of he registration system.
 	private boolean systemEnabled = false;//The enabled status of the registration system.
+
+	/**
+	 * Reads in the registration system object from the file on disk.
+	 * @throws FileNotFoundException Thrown if the file is not found on the disk.
+	 * @throws IOException Thrown if an IO problem occurs.
+	 * @throws ClassNotFoundException Thrown if the object can not be casted.
+	 */
 	public static void readInRegisteredDevices() throws FileNotFoundException, IOException, ClassNotFoundException{
 		File f = new File(Tools.getApplicationDir() + "/Registered_devices.jdb");
 		if(!f.exists()){
@@ -39,6 +46,11 @@ public class RegisteredDevices extends LinkedHashMap<String, Device> implements 
 		ois.close();
 	}
 	
+	/**
+	 * Writes the registration system object to a file.
+	 * @throws FileNotFoundException Thrown if file is not found on disk.
+	 * @throws IOException Thrown if an IO Problem occurs.  
+	 */
 	public static void writeRegisteredDevices() throws FileNotFoundException, IOException{
 		File f = new File(Tools.getApplicationDir() + "/Registered_devices.jdb");
 		if(!f.exists())
@@ -75,4 +87,3 @@ public class RegisteredDevices extends LinkedHashMap<String, Device> implements 
 	}
 
 }
-

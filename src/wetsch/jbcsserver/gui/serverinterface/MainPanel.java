@@ -60,7 +60,7 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 	private JbcsServer server = null;//Barcode scanner server object.
 	private SWATWidgets swtWidgets = null;//SWT widgets object.
 	private SystemTrayIcon trayIcon = null;//Windows system tray icon
-	private RegisteredDeicesMainPanel registeredDeicesMainPanel = null;
+	private RegisteredDeicesMainPanel registeredDeicesMainPanel = null;//Instance to the registration system main panel controls.
 
 	public MainPanel() {
 		setupActionListeners();
@@ -325,7 +325,8 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 	}
 	
 	//Implemented Listeners
-
+	
+	//Main action listener method for the server interface main panel.
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnStartStopServer){
@@ -344,7 +345,6 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 			saveBarcodeDataTableAsCsvFile();
 		}
 	}
-
 	
 	//Linux system tray icon menu items listener.
 	private class LinuxSystemTrayListener implements Listener {
@@ -362,6 +362,7 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 		}
 	}
 	
+	//This class is used for the menu bar actionn listener.
 	private class MenuBarListener implements ActionListener{
 		//Method to open device registration frame.
 		private void openRegisteredDevices(){
@@ -374,7 +375,7 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 				}
 			});
 		}
-
+		// Implemented method for click actions on the main menu bar.
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource() == menuBar.jmiExit){
@@ -389,6 +390,7 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 		}
 	}
 
+	//This class is used for the system tray icon for Windows and OS X based systems.
 	private class TrayIconActionListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -403,8 +405,11 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 			}
 		}
 	}
-
+	
+	//This class is used for the JBCS server listener.
 	private class JbcsServerListenerAdapter implements JbcsServerListener{
+
+		//Called when the ServerStarted method is called from the JBCS server.
 		private void serverStarted(JbcsServer s){
 			btnStartStopServer.setText("Stop Server");
 			lblServerStatus.setText("Running");
@@ -417,7 +422,8 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 			if(s.getListeningInetAddress().equals("127.0.0.1"))
 				JOptionPane.showMessageDialog(null, "The server is listening on the loopback address. This will prevent the server from receieving information from the client.", "Warning", JOptionPane.WARNING_MESSAGE);
 		}
-	
+		
+		//Called when the ServerStopped method is called from the JBCS server.
 		private void serverStopped(){
 			btnStartStopServer.setText("Start Server");
 			lblServerStatus.setText("Not Running");
