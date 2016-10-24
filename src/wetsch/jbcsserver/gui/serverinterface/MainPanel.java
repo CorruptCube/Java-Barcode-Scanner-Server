@@ -345,7 +345,6 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 			saveBarcodeDataTableAsCsvFile();
 		}
 	}
-
 	
 	//Linux system tray icon menu items listener.
 	private class LinuxSystemTrayListener implements Listener {
@@ -376,7 +375,7 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 				}
 			});
 		}
-
+		// Implemented method for click actions on the main menu bar.
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource() == menuBar.jmiExit){
@@ -409,6 +408,8 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 	
 	//This class is used for the JBCS server listener.
 	private class JbcsServerListenerAdapter implements JbcsServerListener{
+
+		//Called when the ServerStarted method is called from the JBCS server.
 		private void serverStarted(JbcsServer s){
 			btnStartStopServer.setText("Stop Server");
 			lblServerStatus.setText("Running");
@@ -421,7 +422,8 @@ public class MainPanel  extends MainPanelLayout implements ActionListener{
 			if(s.getListeningInetAddress().equals("127.0.0.1"))
 				JOptionPane.showMessageDialog(null, "The server is listening on the loopback address. This will prevent the server from receieving information from the client.", "Warning", JOptionPane.WARNING_MESSAGE);
 		}
-	
+		
+		//Called when the ServerStopped method is called from the JBCS server.
 		private void serverStopped(){
 			btnStartStopServer.setText("Start Server");
 			lblServerStatus.setText("Not Running");

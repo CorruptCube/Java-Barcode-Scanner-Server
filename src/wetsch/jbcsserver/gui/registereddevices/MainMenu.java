@@ -28,7 +28,5 @@ public class MainMenu extends JMenuBar{
 	private void setupMenu(){
 		add(jmActions);
 		jmActions.add(jmiRemoveDatabase);
-		
 		}
-
 }
