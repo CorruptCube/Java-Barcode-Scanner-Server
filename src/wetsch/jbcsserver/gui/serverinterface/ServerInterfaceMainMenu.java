@@ -26,7 +26,7 @@ public class ServerInterfaceMainMenu extends JMenuBar {
 	public JMenuItem jmiDebugReport = new JMenuItem("Debug Reporting");//Menu item to open debug report.
 	public JMenuItem jmiRefreshInterfaces = new JMenuItem("Refresh Interfaces");//Refresh available interfaces.
 	
-	public ServerInterfaceMainMenu() {
+	public ServerInterfaceMainMenu() {		
 		setupMenu();
 	}
 
