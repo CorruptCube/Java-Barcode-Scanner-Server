@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import wetsch.jbcsserver.gui.serverinterface.MainPanel;
 import wetsch.jbcsserver.server.registrationsystem.RegisteredDevices;
@@ -37,8 +39,33 @@ public class RunStandAloneInterface {
 			e.printStackTrace();
 			new DebugPrinter().sendDebugToFile(e);
 		}
+		if(System.getProperty("os.name").equals("Mac OS X"))
+			nativeAppleMenuBar();
+
+		
 		new MainPanel(); // Start the UI interface.
 
+	}
+	
+	private static void nativeAppleMenuBar(){
+        try {
+       	 System.out.println("Called");
+   		 System.setProperty("apple.laf.useScreenMenuBar", "true");
+         System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Test");
+       	 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
