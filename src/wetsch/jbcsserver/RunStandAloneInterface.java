@@ -49,21 +49,16 @@ public class RunStandAloneInterface {
 	
 	private static void nativeAppleMenuBar(){
         try {
-       	 System.out.println("Called");
    		 System.setProperty("apple.laf.useScreenMenuBar", "true");
-         System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Test");
-       	 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+   	    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "HBCS Server!");
+   	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UnsupportedLookAndFeelException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
