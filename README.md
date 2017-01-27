@@ -2,6 +2,7 @@
 Collects the barcode data from an android device running the client app.  
 
 Be sure to use the version of the cliet that matches the version of the server you are using.
+
 /*
 1/27/2017
 Added native menubar support for Mac OS X.
